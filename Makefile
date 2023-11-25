@@ -26,7 +26,7 @@ MAGENTA		=	\033[0;95m
 CYAN		=	\033[0;96m
 WHITE		=	\033[0;97m
 
-SRC_FILES	=	exec main builtins prompt
+SRC_FILES	=	split lib exec process main builtins prompt
 
 
 SRC			=	$(addprefix $(SRC_DIR), $(addsuffix .c, $(SRC_FILES)))
@@ -64,4 +64,4 @@ fclean:		clean
 
 re:			fclean all
 
-PHONY:		all clean fclean re norm bonus
+.PHONY:		all clean fclean re norm bonus
