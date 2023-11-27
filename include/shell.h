@@ -26,4 +26,17 @@ void	error(void);
 char	*strjoin(char const *s1, char const *s2);
 char	**split(char const *s, char c);
 
+// builtins fonction
+
+typedef struct cmd {
+    int val_retour;
+} cmd; 
+
+int is_builtins(char *cmd);
+int pwd ();
+void print_val_ret(struct cmd c) ;
+int cd(char *ref);
+void exit_maison ();
+
+
 #endif
