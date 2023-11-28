@@ -49,13 +49,13 @@ void	error(void)
 	exit(EXIT_FAILURE);
 }
 
-void	execute(char *cmd, char **envp)
+// execute la commande externe 
+void	execute(cmd *c, char **envp)
 {
-	char	**tab;
 	int		i;
 	char	*path;
+	char 	**tab = c->str_opts;
 
-	tab = split(cmd, ' ');
 	if (is_slash(tab[0]))
 		path = tab[0];
 	else
@@ -69,5 +69,6 @@ void	execute(char *cmd, char **envp)
 		if (!path)
 			error();
 		error();
+		return;
 	}
 }

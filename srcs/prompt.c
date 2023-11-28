@@ -1,8 +1,8 @@
-#include "../include/jsh.h"
+#include "shell.h"	
 
 char * fmt_cwd(char * cwd) {
 	int len = strlen(cwd);
-	if(len <= 30) {
+	if(len <= 25) {
 		char * res = malloc(len + 1);
 		int i;
 		for(i = 0; i < len; i++) {
@@ -11,11 +11,11 @@ char * fmt_cwd(char * cwd) {
 		res[i] = '\0';
 		return res;
 	}
-	char * res = malloc(31);
-	res[30] = '\0';
+	char * res = malloc(26);
+	res[25] = '\0';
 	int i = len - 1;
 	int j;
-	for(j = 29; j >= 3; j--) {
+	for(j = 24; j >= 3; j--) {
 		res[j] = cwd[i];
 		i--;
 	}
@@ -25,7 +25,7 @@ char * fmt_cwd(char * cwd) {
 	return res;
 }
 
-char * cat(char * pr1, char * f_cwd, char * pr2) {
+char * cat_maison(char * pr1, char * f_cwd, char * pr2) {
 	char * res = malloc(27 + strlen(f_cwd));
 	int i = 0;
 	for(int j = 0; j < 17; j++) {
@@ -53,8 +53,9 @@ char * prompt() {
 	char * f_cwd = fmt_cwd(cwd);
 	char * pr1 = "\001\033[32m\002[0]\001\033[34m\002";
 	char * pr2 = "\001\033[00m\002$ ";
-	char * pr = cat(pr1, f_cwd, pr2);
+	char * pr = cat_maison(pr1, f_cwd, pr2);
 
+	rl_outstream = stderr;
 	char * ligne = readline(pr);
 	free(f_cwd);
 	free(pr);

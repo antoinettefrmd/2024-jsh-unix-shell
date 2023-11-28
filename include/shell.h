@@ -11,19 +11,39 @@
 # include <sys/stat.h>
 # include <sys/types.h>
 # include <fcntl.h>
+# include <limits.h>
 # include <errno.h>
 # include <signal.h>
 #include <bsd/bsd.h>
 
+typedef struct cmd {
+    int val_retour;
+    char **str_opts;
+    char *chem_jsh;
+} cmd; 
+
 //exec functions
 
-void	execute(char *cmd, char **envp);
-void    process(char *cmd, char ** envp);
+void	execute(cmd *c, char **envp);
+void    process(cmd *c, char ** envp);
 void	error(void);
 
 // string utils functions
 
 char	*strjoin(char const *s1, char const *s2);
 char	**split(char const *s, char c);
+void    free_cmd(cmd *c, int b);
+
+// builtins fonctions
+
+int is_builtins(cmd *c);
+int pwd ();
+void print_val_ret(int val) ;
+int cd(char *ref);
+void exit_maison ();
+
+// prompt fonctions
+
+char * prompt();
 
 #endif

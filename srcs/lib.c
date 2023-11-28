@@ -28,3 +28,17 @@ char	*strjoin(char const *s1, char const *s2)
 	s3[a + b] = 0;
 	return (s3);
 }
+
+void free_cmd(cmd *c, int b) {
+	int i = 0;
+    while (c->str_opts[i] != NULL) 
+    {
+        free(c->str_opts[i]);
+        i += 1;
+    }
+    free(c->str_opts);
+	if (b) {
+		free(c);
+	}
+    
+}
