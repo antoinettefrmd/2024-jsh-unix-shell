@@ -29,7 +29,9 @@ char	*strjoin(char const *s1, char const *s2)
 	return (s3);
 }
 
-void free_cmd(cmd *c, int b) {
+
+// free la structure complete si free_all, seulement str_opts sinon
+void free_cmd(cmd *c, int free_all) {
 	int i = 0;
     while (c->str_opts[i] != NULL) 
     {
@@ -37,7 +39,7 @@ void free_cmd(cmd *c, int b) {
         i += 1;
     }
     free(c->str_opts);
-	if (b) {
+	if (free_all) {
 		free(c);
 	}
     
