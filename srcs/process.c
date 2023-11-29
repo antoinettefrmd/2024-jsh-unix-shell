@@ -16,7 +16,7 @@ void process(cmd *c, char ** envp)
     else {
         waitpid(pid, &status, 0); // attend que le pocessus fils soit fini
         if (WIFEXITED(status)) {
-            c->val_retour = WEXITSTATUS(status);
+            c->val_retour = WEXITSTATUS(status); // récupère le statut du fils et le stocke dans val_retour
         }
     }
 }
