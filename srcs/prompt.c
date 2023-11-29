@@ -1,5 +1,6 @@
 #include "shell.h"	
 
+//Takes the current path and returns a new one to respect the prompt format
 char * fmt_cwd(char * cwd) {
 	int len = strlen(cwd);
 	if(len <= 25) {
@@ -25,6 +26,7 @@ char * fmt_cwd(char * cwd) {
 	return res;
 }
 
+//Takes all the elements needed to make the prompt and concat them all
 char * cat_maison(char * pr1, char * f_cwd, char * pr2) {
 	char * res = malloc(27 + strlen(f_cwd));
 	int i = 0;
@@ -45,6 +47,7 @@ char * cat_maison(char * pr1, char * f_cwd, char * pr2) {
 	return res;
 }
 
+//Creates a prompt using readline and returns the line read by it
 char * prompt() {
 	char cwd[PATH_MAX];
 	if(getcwd(cwd, PATH_MAX) == NULL) {
