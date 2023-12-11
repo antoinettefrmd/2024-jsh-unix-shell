@@ -44,3 +44,18 @@ void free_cmd(cmd *c, int free_all) {
 	}
     
 }
+
+int	tablen(char **cmd)
+{
+	int	i;
+
+	i = 0;
+	while (cmd[i])
+		i++;
+	return (i - 1);
+}
+
+char    *last_cmd(char **cmd)
+{
+    return (cmd[tablen(cmd)]);
+}

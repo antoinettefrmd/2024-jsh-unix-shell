@@ -1,5 +1,6 @@
 #include "shell.h"
 
+
 // créé un processus fils pour executer une commande externe
 void process(cmd *c, char ** envp)
 {
@@ -14,7 +15,10 @@ void process(cmd *c, char ** envp)
         exit(errno);
     }
     else {
-        waitpid(pid, &status, 0); // attend que le pocessus fils soit fini
+        if (!c->bg)   
+            waitpid(pid, &status, 0); // attend que le pocessus fils soit fini
+        else
+            printf("[1] %d\n", pid);
         if (WIFEXITED(status)) {
             c->val_retour = WEXITSTATUS(status); // récupère le statut du fils et le stocke dans val_retour
         }

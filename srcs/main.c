@@ -20,7 +20,13 @@ int main(int argc, char const *argv[], char **envp)
 			free(c);
 			return 0;
 		}
+		c->bg = 0;
 		c->str_opts = split(ligne, ' '); // répartit la commande dans le tableau pour separer les arguments
+		if (!strcmp(last_cmd(c->str_opts), "&"))
+		{
+			c->bg = 1;
+			c->str_opts[tablen(c->str_opts)] = NULL;
+		}
 		add_history(ligne);
 		free(ligne);
 		if(c->str_opts[0] != NULL) {

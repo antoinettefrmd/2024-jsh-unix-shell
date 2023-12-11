@@ -19,6 +19,7 @@
 typedef struct cmd {
     int val_retour;
     char **str_opts;
+    int bg;
     char *chem_jsh;
 } cmd; 
 
@@ -33,6 +34,8 @@ void	error(void);
 char	*strjoin(char const *s1, char const *s2);
 char	**split(char const *s, char c);
 void    free_cmd(cmd *c, int free_all);
+char    *last_cmd(char **cmd);
+int	    tablen(char **cmd);
 
 // builtins fonctions
 
