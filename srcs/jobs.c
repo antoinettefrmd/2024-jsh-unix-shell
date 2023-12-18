@@ -6,10 +6,10 @@ void print_job(job j) {
 
 void check_jobs(cmd *c) {
 	job *jobs = c -> jobs;
-	int status;
 	int i = 0;
-	while(i < c -> job_id) {
+	while(i < c -> all_jobs) {
 		if(strcmp(jobs[i].etat, "Done") != 0 && strcmp(jobs[i].etat, "Killed") != 0) {
+			int status;
 			waitpid(jobs[i].pid, &status, WNOHANG);
 			if(WIFEXITED(status)) {
 				jobs[i].etat = "Done";

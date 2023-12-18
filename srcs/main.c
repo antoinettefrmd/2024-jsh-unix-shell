@@ -9,7 +9,7 @@ int main(int argc, char const *argv[], char **envp)
 	}
 	struct cmd *c = malloc(sizeof (cmd));
 	c -> nb_jobs = 0;
-	c -> job_id = 0;
+	c -> all_jobs = 0;
 	c -> jobs = NULL;
 	c -> val_retour = 0;
 	(void)argv;

@@ -2,7 +2,7 @@
 
 
 void add_job(cmd *c, int pid, char *ligne) {
-	int nb = c -> job_id;
+	int nb = c -> all_jobs;
 	job *newJobs = malloc(nb * sizeof(job));
 	if(c -> jobs != NULL) {
 		for(int i = 0; i < nb - 1; i++) {
@@ -10,7 +10,7 @@ void add_job(cmd *c, int pid, char *ligne) {
 		}
 		free(c -> jobs);
 	}
-	job new = {.nb = (c -> job_id), .pid = pid, .etat = "Running", .ligne = ligne};
+	job new = {.nb = (c -> all_jobs), .pid = pid, .etat = "Running", .ligne = ligne};
         newJobs[nb - 1] = new;
 	print_job(new);
 	c -> jobs = newJobs;
@@ -39,7 +39,7 @@ void process(cmd *c, char ** envp, char *ligne)
         }
         else {
 		c -> nb_jobs = (c -> nb_jobs) + 1;
-		c -> job_id = (c -> job_id) + 1;
+		c -> all_jobs = (c -> all_jobs) + 1;
 		add_job(c, pid, ligne);
 	}
     }

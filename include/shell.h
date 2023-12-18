@@ -29,7 +29,7 @@ typedef struct cmd {
     int bg;
     char *chem_jsh;
     int nb_jobs;
-    int job_id;
+    int all_jobs;
     job *jobs;
 } cmd; 
 
