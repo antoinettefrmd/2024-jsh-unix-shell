@@ -1,8 +1,23 @@
 #include "shell.h"
 
 
+void add_job(cmd *c, int pid, char *ligne) {
+	int nb = c -> job_id;
+	job *newJobs = malloc(nb * sizeof(job));
+	if(c -> jobs != NULL) {
+		for(int i = 0; i < nb - 1; i++) {
+			newJobs[i] = (c -> jobs)[i];
+		}
+		free(c -> jobs);
+	}
+	job new = {.nb = (c -> job_id), .pid = pid, .etat = "Running", .ligne = ligne};
+        newJobs[nb - 1] = new;
+	print_job(new);
+	c -> jobs = newJobs;
+}	
+
 // créé un processus fils pour executer une commande externe
-void process(cmd *c, char ** envp)
+void process(cmd *c, char ** envp, char *ligne)
 {
     pid_t   pid;
     int     status;
@@ -15,12 +30,17 @@ void process(cmd *c, char ** envp)
         exit(errno);
     }
     else {
-        if (!c->bg)   
-            waitpid(pid, &status, 0); // attend que le pocessus fils soit fini
-        else
-            printf("[1] %d\n", pid);
-        if (WIFEXITED(status)) {
-            c->val_retour = WEXITSTATUS(status); // récupère le statut du fils et le stocke dans val_retour
+        if (!c->bg) {
+		free(ligne);
+            	waitpid(pid, &status, 0); // attend que le pocessus fils soit fini
+		if (WIFEXITED(status)) {
+                	c->val_retour = WEXITSTATUS(status); // récupère le statut du fils et le stocke dans val_retour
+		}
         }
+        else {
+		c -> nb_jobs = (c -> nb_jobs) + 1;
+		c -> job_id = (c -> job_id) + 1;
+		add_job(c, pid, ligne);
+	}
     }
 }

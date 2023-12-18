@@ -29,20 +29,28 @@ char	*strjoin(char const *s1, char const *s2) // concatène deux chaînes et ret
 	return (s3);
 }
 
+void free_jobs(cmd *c) {
+	if(c -> jobs != NULL) {
+                for(int i = 0; i < c -> job_id; i++) {
+                        free((c -> jobs)[i].ligne);
+                }
+                free(c -> jobs);
+        }
+}
 
 // free la structure complete si free_all, seulement str_opts sinon
 void free_cmd(cmd *c, int free_all) {
 	int i = 0;
-    while (c->str_opts[i] != NULL) 
-    {
-        free(c->str_opts[i]);
-        i += 1;
-    }
-    free(c->str_opts);
-	if (free_all) {
-		free(c);
+	while (c->str_opts[i] != NULL) 
+	{
+		free(c->str_opts[i]);
+		i += 1;
 	}
-    
+	free(c->str_opts);
+	if (free_all) {
+		free_jobs(c);
+		free(c);
+	}    
 }
 
 int	tablen(char **cmd)

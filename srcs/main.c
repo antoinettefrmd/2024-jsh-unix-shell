@@ -8,11 +8,15 @@ int main(int argc, char const *argv[], char **envp)
 		exit(1);
 	}
 	struct cmd *c = malloc(sizeof (cmd));
+	c -> nb_jobs = 0;
+	c -> job_id = 0;
+	c -> jobs = NULL;
+	c -> val_retour = 0;
 	(void)argv;
 	char buf[PATH_MAX];
 	getcwd(buf, sizeof(buf)); // Stocke le chemin du dépot
 	c->chem_jsh = buf;
-	char * ligne = prompt();
+	char * ligne = prompt(c);
 	while(1) {
 		if (ligne == NULL) 
 		{
@@ -21,21 +25,25 @@ int main(int argc, char const *argv[], char **envp)
 			return 0;
 		}
 		c->bg = 0;
-		c->str_opts = split(ligne, ' '); // répartit la commande dans le tableau pour separer les arguments
-		if (!strcmp(last_cmd(c->str_opts), "&"))
-		{
-			c->bg = 1;
-			c->str_opts[tablen(c->str_opts)] = NULL;
-		}
-		add_history(ligne);
-		free(ligne);
-		if(c->str_opts[0] != NULL) {
-			if (!(is_builtins(c))) { // regarde si l'arg est une commande interne
-				process(c, envp); // on considère alors que c'est une commande externe
+                c->str_opts = split(ligne, ' '); // répartit la commande dans le tableau pour separer les arguments
+		if(strcmp(ligne, "") != 0) {
+			if (!strcmp(last_cmd(c->str_opts), "&"))
+			{
+				c->bg = 1;
+				free(c -> str_opts[tablen(c->str_opts)]);
+				c->str_opts[tablen(c->str_opts)] = NULL;
 			}
-		}	
-		free_cmd(c, 0);	// free seulement le tableau des commandes et options
-		ligne = prompt();
+			add_history(ligne);
+			if(c->str_opts[0] != NULL) {
+				if (!(is_builtins(c))) { // regarde si l'arg est une commande interne
+					process(c, envp, strndup(ligne, strlen(ligne) - 2)); // on considère alors que c'est une commande externe
+				}
+			}
+		}
+		free_cmd(c, 0); // free seulement le tableau des commandes et options
+		free(ligne);
+		check_jobs(c);
+		ligne = prompt(c);
 	}
 	return 0;
 }

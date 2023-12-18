@@ -128,4 +128,3 @@ void exit_maison (cmd *c)
     free_cmd(c, 1); //free la le tableau d'arg ET la strucuture commande
     exit(tmp);    
 }
-

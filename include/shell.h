@@ -16,17 +16,27 @@
 # include <signal.h>
 #include <bsd/bsd.h>
 
+typedef struct job {
+	int nb;
+	int pid;
+	char *etat;
+	char *ligne;
+} job;
+
 typedef struct cmd {
     int val_retour;
     char **str_opts;
     int bg;
     char *chem_jsh;
+    int nb_jobs;
+    int job_id;
+    job *jobs;
 } cmd; 
 
 //exec functions
 
 void	execute(cmd *c, char **envp);
-void    process(cmd *c, char ** envp);
+void    process(cmd *c, char ** envp, char *ligne);
 void	error(void);
 
 // string utils functions
@@ -47,6 +57,11 @@ void exit_maison ();
 
 // prompt fonctions
 
-char * prompt();
+char * prompt(cmd *c);
+
+// jobs fonctions
+
+void print_job(job j);
+void check_jobs(cmd *c);
 
 #endif
