@@ -6,13 +6,13 @@ void print_job(job j) {
 
 void check_jobs(cmd *c) {
 	job *jobs = c -> jobs;
-	int status = INT_MIN;
+	int status;
 	int i = 0;
 	while(i < c -> all_jobs) {
-		if(strcmp(jobs[i].etat, "Done") != 0 && strcmp(jobs[i].etat, "Killed") != 0) {
-			int old_stat = status;
+		if(strcmp(jobs[i].etat, "Running") == 0 || strcmp(jobs[i].etat, "Stopped") == 0) {
+			status = INT_MIN;
                 	waitpid(jobs[i].pid, &status, WUNTRACED | WNOHANG);
-			if(old_stat != status) {
+			if(status != INT_MIN) {
                 		if(WIFEXITED(status)) {
                         		jobs[i].etat = "Done";
                         		c -> nb_jobs = c -> nb_jobs - 1;

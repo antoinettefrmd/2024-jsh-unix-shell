@@ -55,6 +55,7 @@ void print_val_ret(int val) ;
 int cd(char *ref);
 void exit_maison ();
 void jobs (cmd *c);
+void kill_maison(cmd *c);
 
 // prompt fonctions
 

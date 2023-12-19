@@ -46,6 +46,11 @@ int is_builtins(cmd *c)
 	    jobs(c);
 	    return 1;
     }
+    if (strcmp("kill", c->str_opts[0]) == 0)
+    {
+	    kill_maison(c);
+	    return 1;
+    }
     return 0; 
 }
 
@@ -144,6 +149,43 @@ void exit_maison (cmd *c)
 void jobs (cmd *c) {
 	for(int i = 0; i < c -> all_jobs; i++) {
 		print_job(c -> jobs[i]);
+	}
+	c -> val_retour = 0;
+}
+
+void kill_maison(cmd *c) {
+	char *tmp = c -> str_opts[1];
+	char *job;
+	int sig = 15;
+	if(tmp[0] == '-') {
+		sig = atoi(tmp) * (-1);
+		job = c -> str_opts[2];
+	}
+	else job = c -> str_opts[1];
+	for(int i = 0; i < c -> all_jobs; i++) {
+		if(strcmp("Running", c -> jobs[i].etat) == 0 || strcmp("Stopped", c -> jobs[i].etat) == 0) {
+			if(job[0] == '%') {
+				int j = 1;
+				char *groupe = malloc(strlen(job));
+				while(job[j] != '\0') {
+					groupe[j - 1] = job[j];
+					j++;
+				}
+				groupe[j - 1] = '\0';
+				if(c -> jobs[i].nb == atoi(groupe)) {
+					kill(c -> jobs[i].pid, sig);
+					free(groupe);
+					break;
+				}
+				free(groupe);
+			}
+			else {
+				if(c -> jobs[i].pid == atoi(job)) {
+					kill(c -> jobs[i].pid, sig);
+					break;
+				}
+			}
+		}
 	}
 	c -> val_retour = 0;
 }
