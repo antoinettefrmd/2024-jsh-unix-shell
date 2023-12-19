@@ -41,6 +41,11 @@ int is_builtins(cmd *c)
         exit_maison(c);
         return 1;
     }
+    if (strcmp("jobs", c->str_opts[0]) == 0)
+    {
+	    jobs(c);
+	    return 1;
+    }
     return 0; 
 }
 
@@ -120,6 +125,13 @@ int cd (char *ref)
 // Sortie de programme qui free les derniers malloc et renvoie la valeur qui explique l'arrêt
 void exit_maison (cmd *c) 
 {
+   for (int i = 0; i < c -> all_jobs; i++) {
+	if(strcmp("Stopped", c -> jobs[i].etat) == 0 || strcmp("Running", c -> jobs[i].etat) == 0) {
+		printf("Attention : certains jobs sont toujours en cours d'exécution.\n");
+		c -> val_retour = 1;
+		return;
+	}
+    }
     int tmp = c->val_retour; // valeur de la dernière commande executée
     if (c->str_opts[1] != NULL)
     {
@@ -127,4 +139,11 @@ void exit_maison (cmd *c)
     }
     free_cmd(c, 1); //free la le tableau d'arg ET la strucuture commande
     exit(tmp);    
+}
+
+void jobs (cmd *c) {
+	for(int i = 0; i < c -> all_jobs; i++) {
+		print_job(c -> jobs[i]);
+	}
+	c -> val_retour = 0;
 }

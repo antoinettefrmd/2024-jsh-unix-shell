@@ -18,7 +18,7 @@
 
 typedef struct job {
 	int nb;
-	int pid;
+	pid_t pid;
 	char *etat;
 	char *ligne;
 } job;
@@ -54,6 +54,7 @@ int pwd ();
 void print_val_ret(int val) ;
 int cd(char *ref);
 void exit_maison ();
+void jobs (cmd *c);
 
 // prompt fonctions
 

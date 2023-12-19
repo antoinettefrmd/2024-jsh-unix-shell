@@ -31,7 +31,7 @@ char	*strjoin(char const *s1, char const *s2) // concatène deux chaînes et ret
 
 void free_jobs(cmd *c) {
 	if(c -> jobs != NULL) {
-                for(int i = 0; i < c -> job_id; i++) {
+                for(int i = 0; i < c -> all_jobs; i++) {
                         free((c -> jobs)[i].ligne);
                 }
                 free(c -> jobs);

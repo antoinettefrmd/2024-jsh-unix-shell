@@ -1,7 +1,7 @@
 #include "shell.h"
 
 
-void add_job(cmd *c, int pid, char *ligne) {
+void add_job(cmd *c, pid_t pid, char *ligne) {
 	int nb = c -> all_jobs;
 	job *newJobs = malloc(nb * sizeof(job));
 	if(c -> jobs != NULL) {
