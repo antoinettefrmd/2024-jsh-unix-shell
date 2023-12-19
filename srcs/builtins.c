@@ -5,6 +5,8 @@ int is_builtins(cmd *c)
 { 
     if (strcmp("cd", c->str_opts[0]) == 0) // Change le repertoire de travail courant
     { 
+        char buf[PATH_MAX];
+	    getcwd(buf, sizeof(buf));
         if (c->str_opts[1] == NULL) { 
             char *home = getenv("HOME");
             if (home != NULL) 
@@ -21,8 +23,10 @@ int is_builtins(cmd *c)
         }
         else 
         {
-            c->val_retour = cd(c->str_opts[1]); // Nous ramène au bout du chemin passé en argument
+            c->val_retour = cd(c->str_opts[1]); // Nous ramène au bout du chemin passé en argument  
         } 
+        free(c->chem_jsh);
+        c->chem_jsh = strdup(buf);
         return 1;
     }
     if (strcmp("pwd", c->str_opts[0]) == 0) // Affiche la référence physique absolue du répertoire de travail courant

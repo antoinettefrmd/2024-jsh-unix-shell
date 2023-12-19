@@ -49,6 +49,7 @@ void free_cmd(cmd *c, int free_all) {
 	free(c->str_opts);
 	if (free_all) {
 		free_jobs(c);
+		free(c->chem_jsh);
 		free(c);
 	}    
 }

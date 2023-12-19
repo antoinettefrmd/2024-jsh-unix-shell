@@ -15,13 +15,13 @@ int main(int argc, char const *argv[], char **envp)
 	(void)argv;
 	char buf[PATH_MAX];
 	getcwd(buf, sizeof(buf)); // Stocke le chemin du dépot
-	c->chem_jsh = buf;
+	c->chem_jsh = strdup(buf);
 	char * ligne = prompt(c);
+
 	while(1) {
 		if (ligne == NULL) 
 		{
-			exit(c->val_retour);
-			free(c);
+			exit_maison(c, 1);
 			return 0;
 		}
 		c->bg = 0;
