@@ -10,7 +10,7 @@ void add_job(cmd *c, pid_t pid, char *ligne) {
 		}
 		free(c -> jobs);
 	}
-	job new = {.nb = (c -> all_jobs), .pid = pid, .etat = "Running", .ligne = ligne};
+	job new = {.groupe = (c -> all_jobs), .pid = pid, .etat = "Running", .ligne = ligne};
         newJobs[nb - 1] = new;
 	print_job(new);
 	c -> jobs = newJobs;
@@ -22,12 +22,19 @@ void process(cmd *c, char ** envp, char *ligne)
     pid_t   pid;
     int     status;
 
+    if(c -> bg) {
+	    c -> nb_jobs = (c -> nb_jobs) + 1;
+	    c -> all_jobs = (c -> all_jobs) + 1;
+    }
+
     pid = fork();
     if (pid == -1)
         error();
     else if (pid == 0) {
+	   	if(c -> bg) {
+	    		setpgid(pid, 0);
+		}
 		int indice_redir = parse_redir(c);
-		// printf("-------------------------------%d----------------\n", indice_redir);
 		if (indice_redir == -1) exit(1);
 		petit_tab(indice_redir, c);
 		if (!(is_builtins(c))) { // regarde si l'arg est une commande interne
@@ -44,8 +51,6 @@ void process(cmd *c, char ** envp, char *ligne)
 			}
         }
         else {
-		c -> nb_jobs = (c -> nb_jobs) + 1;
-		c -> all_jobs = (c -> all_jobs) + 1;
 		add_job(c, pid, ligne);
 	}
     }

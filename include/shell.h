@@ -17,7 +17,7 @@
 #include <bsd/bsd.h>
 
 typedef struct job {
-	int nb;
+	pid_t groupe;
 	pid_t pid;
 	char *etat;
 	char *ligne;
@@ -29,7 +29,7 @@ typedef struct cmd {
     int bg;
     char *chem_jsh;
     int nb_jobs;
-    int all_jobs;
+    pid_t all_jobs;
     job *jobs;
     int fd_in;
     int fd_out;

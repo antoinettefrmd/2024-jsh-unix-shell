@@ -159,7 +159,7 @@ void exit_maison (cmd *c)
 // à voir avec georges pour les redirections pour le print 
 void jobs (cmd *c) {
 	for(int i = 0; i < c -> all_jobs; i++) {
-        if (strcmp("Running", c->jobs[i].etat ) == 0 || strcmp("Stopped", c->jobs[i].etat ) == 0) 
+        	if (strcmp("Running", c->jobs[i].etat ) == 0 || strcmp("Stopped", c->jobs[i].etat ) == 0) 
 		    print_job(c -> jobs[i]);
 	}
 	c -> val_retour = 0;
@@ -184,8 +184,8 @@ void kill_maison(cmd *c) {
 					j++;
 				}
 				groupe[j - 1] = '\0';
-				if(c -> jobs[i].nb == atoi(groupe)) {
-					kill(c -> jobs[i].pid, sig);
+				if(c -> jobs[i].groupe == atoi(groupe)) {
+					kill(-(c -> jobs[i].pid), sig);
 					free(groupe);
 					break;
 				}

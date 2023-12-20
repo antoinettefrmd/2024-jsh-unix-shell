@@ -1,9 +1,9 @@
 #include "shell.h"
 
 void print_job(job j) {
-	int size = strlen(j.ligne) + strlen(j.etat) + nb_digits(j.nb) + nb_digits(j.pid) + 6;
+	int size = strlen(j.ligne) + strlen(j.etat) + nb_digits(j.groupe) + nb_digits(j.pid) + 6;
 	char *s = malloc(size + 1);
-	sprintf(s, "[%d] %d %s %s\n", j.nb, j.pid, j.etat, j.ligne);
+	sprintf(s, "[%d] %d %s %s\n", j.groupe, j.pid, j.etat, j.ligne);
 	s[size] = '\0';
 	write(2, s, size);
 	free(s);

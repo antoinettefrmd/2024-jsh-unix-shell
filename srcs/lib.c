@@ -43,7 +43,7 @@ void error_open()
 	switch (errno)
 	{
 		case EACCES:
-			write(2, "The requested access to the file is not allowed, or search permission is denied for one of the directories in the path prefix of pathname, or the file did not exist yet and write access to the parent directory is not allowed.\n", 277);
+			write(2, "The requested access to the file is not allowed, or search permission is denied for one of the directories in the path prefix of pathname, or the file did not exist yet and write access to the parent directory is not allowed.\n", 227);
 			break;
 		case EDQUOT:
 			write(2, "Where O_CREAT is specified, the file does not exist, and the user's quota of disk blocks or inodes on the filesystem has been exhausted.\n", 138);
