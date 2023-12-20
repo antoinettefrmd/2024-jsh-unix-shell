@@ -4,9 +4,7 @@
 int is_builtins(cmd *c) 
 { 
     if (strcmp("cd", c->str_opts[0]) == 0) // Change le repertoire de travail courant
-    { 
-        int indice_redir = parse_redir(c);
-	    petit_tab(indice_redir, c);
+    {
         char buf[PATH_MAX];
 	    getcwd(buf, sizeof(buf));
         if (c->str_opts[1] == NULL) { 
@@ -33,15 +31,11 @@ int is_builtins(cmd *c)
     }
     if (strcmp("pwd", c->str_opts[0]) == 0) // Affiche la référence physique absolue du répertoire de travail courant
     {
-        int indice_redir = parse_redir(c);
-	    petit_tab(indice_redir, c);
         c->val_retour = pwd();
         return 1;
     }
     if (strncmp("?", c->str_opts[0], 1) == 0) // Affiche la valeur de la dernière commande executée
     { 
-        int indice_redir = parse_redir(c);
-	    petit_tab(indice_redir, c);
         print_val_ret(c->val_retour);
         c->val_retour = 0;
         return 1;
@@ -145,7 +139,7 @@ void exit_maison (cmd *c)
    {
         if(strcmp("Stopped", c -> jobs[i].etat) == 0 || strcmp("Running", c -> jobs[i].etat) == 0) 
         {
-            write(c->fd_out, "Attention : certains jobs sont toujours en cours d'exécution.\n", 64);
+            write(2, "Attention : certains jobs sont toujours en cours d'exécution.\n", 64);
             c -> val_retour = 1;
             return;
         }
@@ -165,7 +159,8 @@ void exit_maison (cmd *c)
 // à voir avec georges pour les redirections pour le print 
 void jobs (cmd *c) {
 	for(int i = 0; i < c -> all_jobs; i++) {
-		print_job(c -> jobs[i]);
+        if (strcmp("Running", c->jobs[i].etat ) == 0 || strcmp("Stopped", c->jobs[i].etat ) == 0) 
+		    print_job(c -> jobs[i]);
 	}
 	c -> val_retour = 0;
 }

@@ -41,8 +41,11 @@ int main(int argc, char const *argv[], char **envp)
 				c->str_opts[tablen(c->str_opts)] = NULL;
 			}
 			add_history(ligne);
-			if(c->str_opts[0] != NULL)
-				process(c, envp, strndup(ligne, strlen(ligne) - 2)); // on considère alors que c'est une commande externe
+			if(c->str_opts[0] != NULL) {
+				if(strcmp("cd", c->str_opts[0]) == 0 || strcmp("exit", c->str_opts[0]) == 0 || strcmp("kill", c->str_opts[0]) == 0)
+					is_builtins(c);
+				else process(c, envp, strndup(ligne, strlen(ligne) - 2)); // on considère alors que c'est une commande externe
+			}
 		}
 		free_cmd(c, 0); // free seulement le tableau des commandes et options
 		free(ligne);

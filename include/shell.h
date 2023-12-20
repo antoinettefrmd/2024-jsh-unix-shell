@@ -53,7 +53,12 @@ char	**split(char const *s, char c);
 void    free_cmd(cmd *c, int free_all);
 char    *last_cmd(char **cmd);
 int	    tablen(char **cmd);
-void    petit_tab(int i, cmd *c);        
+void    petit_tab(int i, cmd *c);     
+void    error_open();   
+
+// int utils functions
+
+int nb_digits(int n);
 
 // builtins fonctions
 

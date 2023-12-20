@@ -1,7 +1,12 @@
 #include "shell.h"
 
 void print_job(job j) {
-	printf("[%d] %d %s %s\n", j.nb, j.pid, j.etat, j.ligne);
+	int size = strlen(j.ligne) + strlen(j.etat) + nb_digits(j.nb) + nb_digits(j.pid) + 6;
+	char *s = malloc(size + 1);
+	sprintf(s, "[%d] %d %s %s\n", j.nb, j.pid, j.etat, j.ligne);
+	s[size] = '\0';
+	write(2, s, size);
+	free(s);
 }
 
 void check_jobs(cmd *c) {
@@ -18,7 +23,7 @@ void check_jobs(cmd *c) {
                         		c -> nb_jobs = c -> nb_jobs - 1;
                         		print_job(jobs[i]);
                 		}
-                		else if(WIFSIGNALED(status) && WTERMSIG(status) != 32) {
+                		else if(WIFSIGNALED(status)) {
                         		jobs[i].etat = "Killed";
                         		c -> nb_jobs = c -> nb_jobs - 1;
                         		print_job(jobs[i]);

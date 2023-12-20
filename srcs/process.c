@@ -27,6 +27,8 @@ void process(cmd *c, char ** envp, char *ligne)
         error();
     else if (pid == 0) {
 		int indice_redir = parse_redir(c);
+		// printf("-------------------------------%d----------------\n", indice_redir);
+		if (indice_redir == -1) exit(1);
 		petit_tab(indice_redir, c);
 		if (!(is_builtins(c))) { // regarde si l'arg est une commande interne
         	execute(c, envp); // execute la commande dans le processus fils
