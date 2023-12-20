@@ -31,7 +31,14 @@ typedef struct cmd {
     int nb_jobs;
     int all_jobs;
     job *jobs;
+    int fd_in;
+    int fd_out;
+    int fd_err;
 } cmd; 
+
+//parsing_redir
+int parse_redir(cmd *c);
+int redir_fic(cmd *c);
 
 //exec functions
 
@@ -46,6 +53,7 @@ char	**split(char const *s, char c);
 void    free_cmd(cmd *c, int free_all);
 char    *last_cmd(char **cmd);
 int	    tablen(char **cmd);
+void    petit_tab(int i, cmd *c);        
 
 // builtins fonctions
 

@@ -5,6 +5,8 @@ int is_builtins(cmd *c)
 { 
     if (strcmp("cd", c->str_opts[0]) == 0) // Change le repertoire de travail courant
     { 
+        int indice_redir = parse_redir(c);
+	    petit_tab(indice_redir, c);
         char buf[PATH_MAX];
 	    getcwd(buf, sizeof(buf));
         if (c->str_opts[1] == NULL) { 
@@ -31,17 +33,22 @@ int is_builtins(cmd *c)
     }
     if (strcmp("pwd", c->str_opts[0]) == 0) // Affiche la référence physique absolue du répertoire de travail courant
     {
+        int indice_redir = parse_redir(c);
+	    petit_tab(indice_redir, c);
         c->val_retour = pwd();
         return 1;
     }
     if (strncmp("?", c->str_opts[0], 1) == 0) // Affiche la valeur de la dernière commande executée
     { 
+        int indice_redir = parse_redir(c);
+	    petit_tab(indice_redir, c);
         print_val_ret(c->val_retour);
         c->val_retour = 0;
         return 1;
     }
     if (strcmp("exit", c->str_opts[0]) == 0) // Nous sort du programme en s'assurant d'avoir bien tout free et en renvoyant une valeur qui explique son arrêt
     {
+        // si l'indice est différent de la taille
         exit_maison(c);
         return 1;
     }
@@ -84,7 +91,7 @@ int pwd ()
                 write(2,"Il y a une erreur.\n", 18);
                 break;
         }
-        write(2,"Erreur lors de la récupération du répertoire courant.\n", 58);
+        write(2, "Erreur lors de la récupération du répertoire courant.\n", 58);
         return 1;
     } else {
         write(1, chemin, strlen(chemin)); // ecrit le pwd sur la sortie standard
@@ -134,22 +141,28 @@ int cd (char *ref)
 // Sortie de programme qui free les derniers malloc et renvoie la valeur qui explique l'arrêt
 void exit_maison (cmd *c) 
 {
-   for (int i = 0; i < c -> all_jobs; i++) {
-	if(strcmp("Stopped", c -> jobs[i].etat) == 0 || strcmp("Running", c -> jobs[i].etat) == 0) {
-		printf("Attention : certains jobs sont toujours en cours d'exécution.\n");
-		c -> val_retour = 1;
-		return;
-	}
+   for (int i = 0; i < c -> all_jobs; i++) 
+   {
+        if(strcmp("Stopped", c -> jobs[i].etat) == 0 || strcmp("Running", c -> jobs[i].etat) == 0) 
+        {
+            write(c->fd_out, "Attention : certains jobs sont toujours en cours d'exécution.\n", 64);
+            c -> val_retour = 1;
+            return;
+        }
     }
     int tmp = c->val_retour; // valeur de la dernière commande executée
-    if (c->str_opts[1] != NULL)
+    if (c->str_opts)
     {
-        tmp = atoi(c->str_opts[1]); // si exit prends une valeur de retour en argument, c'est elle qui est renvoyée
-    }
-    free_cmd(c, 1); //free la le tableau d'arg ET la strucuture commande
-    exit(tmp);    
+        if (c->str_opts[1] != NULL)
+        {
+            tmp = atoi(c->str_opts[1]); // si exit prends une valeur de retour en argument, c'est elle qui est renvoyée
+        }
+        free_cmd(c, 1); //free la le tableau d'arg ET la strucuture commande
+    } 
+    exit(tmp);
 }
 
+// à voir avec georges pour les redirections pour le print 
 void jobs (cmd *c) {
 	for(int i = 0; i < c -> all_jobs; i++) {
 		print_job(c -> jobs[i]);

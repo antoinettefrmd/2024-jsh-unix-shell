@@ -26,16 +26,20 @@ void process(cmd *c, char ** envp, char *ligne)
     if (pid == -1)
         error();
     else if (pid == 0) {
-        execute(c, envp); // execute la commande dans le processus fils
+		int indice_redir = parse_redir(c);
+		petit_tab(indice_redir, c);
+		if (!(is_builtins(c))) { // regarde si l'arg est une commande interne
+        	execute(c, envp); // execute la commande dans le processus fils
+		}
         exit(errno);
     }
     else {
         if (!c->bg) {
-		free(ligne);
+			free(ligne);
             	waitpid(pid, &status, 0); // attend que le pocessus fils soit fini
-		if (WIFEXITED(status)) {
-                	c->val_retour = WEXITSTATUS(status); // récupère le statut du fils et le stocke dans val_retour
-		}
+			if (WIFEXITED(status)) {
+                c->val_retour = WEXITSTATUS(status); // récupère le statut du fils et le stocke dans val_retour
+			}
         }
         else {
 		c -> nb_jobs = (c -> nb_jobs) + 1;
