@@ -47,6 +47,10 @@ void    free_cmd(cmd *c, int free_all);
 char    *last_cmd(char **cmd);
 int	    tablen(char **cmd);
 
+// int utils functions
+
+int nb_digits(int n);
+
 // builtins fonctions
 
 int is_builtins(cmd *c);

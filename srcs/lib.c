@@ -67,3 +67,13 @@ char    *last_cmd(char **cmd)
 {
     return (cmd[tablen(cmd)]);
 }
+
+int nb_digits(int n) {
+	int digits = 1;
+        int tmp = n;
+        while((tmp / 10) != 0) {
+                digits++;
+                tmp = tmp / 10;
+        }
+	return digits;
+}

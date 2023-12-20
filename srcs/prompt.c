@@ -62,12 +62,7 @@ char * prompt(struct cmd *c) {
 		exit(1);
 	}
 
-	int digits = 1;
-	int nb_jobs = c -> nb_jobs;
-	while((nb_jobs / 10) != 0) {
-		digits++;
-		nb_jobs = nb_jobs / 10;
-	}
+	int digits = nb_digits(c -> nb_jobs);
 	char * jobs = malloc(digits + 1);
 	jobs[0] = '\0';
 	sprintf(jobs, "%d", c -> nb_jobs);
