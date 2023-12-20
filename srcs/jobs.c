@@ -23,7 +23,7 @@ void check_jobs(cmd *c) {
                         		c -> nb_jobs = c -> nb_jobs - 1;
                         		print_job(jobs[i]);
                 		}
-                		else if(WIFSIGNALED(status) && WTERMSIG(status) != 32) {
+                		else if(WIFSIGNALED(status)) {
                         		jobs[i].etat = "Killed";
                         		c -> nb_jobs = c -> nb_jobs - 1;
                         		print_job(jobs[i]);
