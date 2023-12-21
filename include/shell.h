@@ -17,7 +17,7 @@
 #include <bsd/bsd.h>
 
 typedef struct job {
-	int nb;
+	pid_t groupe;
 	pid_t pid;
 	char *etat;
 	char *ligne;
@@ -29,9 +29,16 @@ typedef struct cmd {
     int bg;
     char *chem_jsh;
     int nb_jobs;
-    int all_jobs;
+    pid_t all_jobs;
     job *jobs;
+    int fd_in;
+    int fd_out;
+    int fd_err;
 } cmd; 
+
+//parsing_redir
+int parse_redir(cmd *c);
+int redir_fic(cmd *c);
 
 //exec functions
 
@@ -46,6 +53,8 @@ char	**split(char const *s, char c);
 void    free_cmd(cmd *c, int free_all);
 char    *last_cmd(char **cmd);
 int	    tablen(char **cmd);
+void    petit_tab(int i, cmd *c);     
+void    error_open();   
 
 // int utils functions
 
@@ -67,7 +76,7 @@ char * prompt(cmd *c);
 
 // jobs fonctions
 
-void print_job(job j);
-void check_jobs(cmd *c);
+void print_job(job j, int sortie);
+void check_jobs(cmd *c, int sortie);
 
 #endif
