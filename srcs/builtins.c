@@ -156,11 +156,11 @@ void exit_maison (cmd *c)
     exit(tmp);
 }
 
-// à voir avec georges pour les redirections pour le print 
 void jobs (cmd *c) {
+	check_jobs(c, 1);
 	for(int i = 0; i < c -> all_jobs; i++) {
         	if (strcmp("Running", c->jobs[i].etat ) == 0 || strcmp("Stopped", c->jobs[i].etat ) == 0) 
-		    print_job(c -> jobs[i]);
+		    print_job(c -> jobs[i], 1);
 	}
 	c -> val_retour = 0;
 }

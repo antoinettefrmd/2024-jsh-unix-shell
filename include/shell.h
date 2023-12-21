@@ -76,7 +76,7 @@ char * prompt(cmd *c);
 
 // jobs fonctions
 
-void print_job(job j);
-void check_jobs(cmd *c);
+void print_job(job j, int sortie);
+void check_jobs(cmd *c, int sortie);
 
 #endif
