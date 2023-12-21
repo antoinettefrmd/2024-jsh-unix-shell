@@ -5,27 +5,27 @@ int parse_redir(cmd *c)
     int i = 0;
     int prem = 0;
     int res = tablen(c->str_opts) + 1;
-    while (c->str_opts[i] != NULL)
+    while (c->str_opts[i] != NULL) // parcours la commmande pour effectuer les éventuelles redirections
     {
         if(c->str_opts[i+1] != NULL)
         {
             if (strcmp("<", c->str_opts[i]) == 0)
             {       
-                c->fd_in = open(c->str_opts[i+1], O_RDONLY); 
+                c->fd_in = open(c->str_opts[i+1], O_RDONLY); // ouverture du fichier surlequel on va lire à la place de l'entrée standard
                 if (!prem) {
                     prem = 1;
                     res = i; 
                 }
             }
-            else if (strcmp(">>", c->str_opts[i]) == 0)
+            else if (strcmp(">>", c->str_opts[i]) == 0) 
             {
-                c->fd_out = open(c->str_opts[i+1], O_WRONLY | O_APPEND | O_CREAT, 0664);
+                c->fd_out = open(c->str_opts[i+1], O_WRONLY | O_APPEND | O_CREAT, 0664); // ouverture du fichier sur lequel la sortie standard va être redirigée
                 if (!prem) {
                     prem = 1;
                     res = i; 
                 }
             }
-            else if (strcmp(">", c->str_opts[i]) == 0)
+            else if (strcmp(">", c->str_opts[i]) == 0) 
             {
                 c->fd_out = open(c->str_opts[i+1], O_WRONLY | O_CREAT | O_EXCL, 0664); 
                 if (!prem) {
@@ -42,9 +42,9 @@ int parse_redir(cmd *c)
                     res = i; 
                 }
             }
-            else if (strcmp("2>|", c->str_opts[i]) == 0)
+            else if (strcmp("2>|", c->str_opts[i]) == 0) 
             {
-                c->fd_err = open(c->str_opts[i+1], O_WRONLY | O_TRUNC | O_CREAT, 0664); 
+                c->fd_err = open(c->str_opts[i+1], O_WRONLY | O_TRUNC | O_CREAT, 0664); // ouverture du fichier sur lequel la sortie erreur va être redirigée
                 if (!prem) {
                     prem = 1;
                     res = i; 
@@ -73,6 +73,6 @@ int parse_redir(cmd *c)
         error_open();
         return -1; 
     }
-    redir_fic(c);
+    if (redir_fic(c)) return -1; // effectue la redirection
     return res;
 }

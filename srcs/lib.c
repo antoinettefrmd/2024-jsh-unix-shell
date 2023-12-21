@@ -95,18 +95,27 @@ void erreur_dup2()
 
 int redir_fic(cmd *c)
 {
+	int err1 = 0;
+	int err2 = 0;
+	int err3 = 0;	
+
 	if (c->fd_out != STDOUT_FILENO)
 	{
-		dup2(c->fd_out, STDOUT_FILENO);
+		err1 = dup2(c->fd_out, STDOUT_FILENO); // effectue la redirection de la sortie standard
 	}
 	if (c->fd_in != STDIN_FILENO)
 	{
-		dup2(c->fd_in, STDIN_FILENO);
+		err2 = dup2(c->fd_in, STDIN_FILENO); // effectue la redirection de l'entrée standard
 	}
 	if (c->fd_err != STDERR_FILENO)
 	{
-		dup2(c->fd_err, STDERR_FILENO);
+		err3 = dup2(c->fd_err, STDERR_FILENO); // effectue la redirection de la sortie erreur
 	}
+	if (err1 == -1 ||err2 == -1 || err3 == -1)
+	{
+		erreur_dup2();
+		return -1;
+	} 
 	return 0;
 }
 

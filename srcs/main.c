@@ -15,7 +15,7 @@ int main(int argc, char const *argv[], char **envp)
 	c -> fd_in = 0;
 	c -> fd_out = 1;
 	c -> fd_err = 2;
-	int in = dup(0);
+	int in = dup(0); //sauvergarde des redirections
 	int out = dup(1);
 	int err = dup(2);
 	(void)argv;
@@ -55,9 +55,9 @@ int main(int argc, char const *argv[], char **envp)
 		free_cmd(c, 0); // free seulement le tableau des commandes et options
 		free(ligne);
 		check_jobs(c, 2);
-		dup2(in, STDIN_FILENO); ///faire attention dans le jalon trois car il peut y avoir plusieurs redirections
-		dup2(out, STDOUT_FILENO);
-		dup2(err, STDERR_FILENO);
+		dup2(in, STDIN_FILENO); // Remets l'entrée standard potentiellement redirigée sur la vraie entrée standard
+		dup2(out, STDOUT_FILENO); // Remets la sortie standard potentiellement redirigée sur la vraie sortie standard
+		dup2(err, STDERR_FILENO); // Remets la sortie erreur potentiellement redirigée sur la vraie erreur standard
 		ligne = prompt(c);
 	}
 	close(in);
