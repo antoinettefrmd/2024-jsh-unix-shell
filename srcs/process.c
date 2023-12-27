@@ -61,8 +61,7 @@ void process(cmd *c, char ** envp, char *ligne)
 						break;
                         		}
 					else if(WIFSIGNALED(status)) {
-                                       		new.etat = "Killed";
-                                       		print_job(new, 2);
+                                       		c->val_retour = 1;
 						break;
                                 	}
                         	}

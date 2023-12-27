@@ -56,6 +56,16 @@ int is_builtins(cmd *c)
 	    kill_maison(c);
 	    return 1;
     }
+    if (strcmp("fg", c->str_opts[0]) == 0)
+    {
+	    fg(c);
+	    return 1;
+    }
+    if (strcmp("bg", c->str_opts[0]) == 0)
+    {
+            bg(c);
+            return 1;
+    }
     return 0; 
 }
 
@@ -199,5 +209,75 @@ void kill_maison(cmd *c) {
 			}
 		}
 	}
+	c -> val_retour = 0;
+}
+
+void fg(cmd *c) {
+	if(c -> str_opts[1] == NULL) {
+		c -> val_retour = 1;
+		perror("fg utilise un argument");
+		return;
+	}
+	char *job = c -> str_opts[1];
+	int i = 1;
+        char *groupe = malloc(strlen(job));
+        while(job[i] != '\0') {
+        	groupe[i - 1] = job[i];
+                i++;
+        }
+        groupe[i - 1] = '\0';
+	c -> val_retour = 0;
+	for(i = 0; i < c -> all_jobs; i++) {
+		if(c -> jobs[i].groupe == atoi(groupe)) {
+			kill(-(c -> jobs[i].pid), SIGCONT);
+			c -> jobs[i].etat = "Running";
+			int status;
+			while(1) {
+                                int res = waitpid(c -> jobs[i].pid, &status, WUNTRACED | WNOHANG);
+                                if(res != 0) {
+                                        if(WIFSTOPPED(status)) {
+                                                c -> jobs[i].etat = "Stopped";
+                                                print_job(c -> jobs[i], 2);
+                                                break;
+                                        }
+                                        else if (WIFEXITED(status)) {
+						c -> jobs[i].etat = "Done";
+                                                c -> val_retour = WEXITSTATUS(status);
+                                                break;
+                                        }
+                                        else if(WIFSIGNALED(status)) {
+						c -> jobs[i].etat = "Killed";
+						break;
+                                        }
+                                }
+                        }
+			break;
+		}
+	}
+	free(groupe);
+}
+
+void bg(cmd *c) {
+        if(c -> str_opts[1] == NULL) {
+                c -> val_retour = 1;
+                perror("bg utilise un argument");
+                return;
+        }
+        char *job = c -> str_opts[1];
+        int i = 1;
+        char *groupe = malloc(strlen(job));
+        while(job[i] != '\0') {
+                groupe[i - 1] = job[i];
+                i++;
+        }
+        groupe[i - 1] = '\0';
+        for(i = 0; i < c -> all_jobs; i++) {
+                if(c -> jobs[i].groupe == atoi(groupe)) {
+                        kill(-(c -> jobs[i].pid), SIGCONT);
+                        c -> jobs[i].etat = "Running";
+                        break;
+                }
+        }
+	free(groupe);
 	c -> val_retour = 0;
 }

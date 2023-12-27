@@ -69,6 +69,8 @@ int cd(char *ref);
 void exit_maison ();
 void jobs (cmd *c);
 void kill_maison(cmd *c);
+void fg(cmd *c);
+void bg(cmd *c);
 
 // prompt fonctions
 
