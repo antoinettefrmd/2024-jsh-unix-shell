@@ -42,7 +42,7 @@ int main(int argc, char const *argv[], char **envp)
 			}
 			add_history(ligne);
 			if(c->str_opts[0] != NULL) {
-				if(strcmp("cd", c->str_opts[0]) == 0 || strcmp("exit", c->str_opts[0]) == 0 || strcmp("kill", c->str_opts[0]) == 0 || strcmp("jobs", c->str_opts[0]) == 0)
+				if(strcmp("cd", c->str_opts[0]) == 0 || strcmp("exit", c->str_opts[0]) == 0 || strcmp("kill", c->str_opts[0]) == 0 || strcmp("jobs", c->str_opts[0]) == 0 || strcmp("fg", c->str_opts[0]) == 0)
 					is_builtins(c);
 				else {
 					if (c -> bg) {

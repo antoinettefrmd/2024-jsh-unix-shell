@@ -243,12 +243,14 @@ void fg(cmd *c) {
                                         else if (WIFEXITED(status)) {
 						c -> jobs[i].etat = "Done";
                                                 c -> val_retour = WEXITSTATUS(status);
+						c -> nb_jobs--;
                                                 break;
                                         }
                                         else if(WIFSIGNALED(status)) {
 						c -> jobs[i].etat = "Killed";
+						c -> nb_jobs--;
 						break;
-                                        }
+					}
                                 }
                         }
 			break;
