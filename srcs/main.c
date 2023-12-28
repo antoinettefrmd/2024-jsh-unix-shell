@@ -7,6 +7,22 @@ int main(int argc, char const *argv[], char **envp)
 		write(2, "Just launch without args\n", 25);
 		exit(1);
 	}
+	// Gestion des signaux -----------------
+	// volatile sig_atomic_t signal_recu = 0;
+
+	// struct sigaction action = {0};
+    // action.sa_handler = SIG_IGN;
+	// sigaction(3, &action, NULL);
+	// sigaction(22, &action, NULL);
+	// sigaction(20, &action, NULL);
+	// sigaction(15, &action, NULL);
+	// sigaction(2, &action, NULL);
+	// void handler () { 
+	// 	signal_recu = 1; 
+	// }
+	// -------------------------------------
+
+	(void)argv;
 	struct cmd *c = malloc(sizeof (cmd));
 	c -> nb_jobs = 0;
 	c -> all_jobs = 0;
@@ -18,7 +34,7 @@ int main(int argc, char const *argv[], char **envp)
 	int in = dup(0); //sauvergarde des redirections
 	int out = dup(1);
 	int err = dup(2);
-	(void)argv;
+	
 	char buf[PATH_MAX];
 	getcwd(buf, sizeof(buf)); // Stocke le chemin du dépot
 	c->chem_jsh = strdup(buf);
