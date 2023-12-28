@@ -167,9 +167,39 @@ void exit_maison (cmd *c)
 }
 
 void jobs (cmd *c) {
+	int tree;
+	if(c -> str_opts[1] != NULL && strcmp(c -> str_opts[1], "-t") == 0) {
+		tree = 1;
+	}
+	else tree = 0;
+
+	int job = 0;
+	if(tree == 1 && c -> str_opts[2] != NULL) {
+		int j = 1;
+                char *groupe = malloc(strlen(c -> str_opts[2]));
+                while(c -> str_opts[2][j] != '\0') {
+                        groupe[j - 1] = c -> str_opts[2][j];
+                        j++;
+                }
+                groupe[j - 1] = '\0';
+		job = atoi(groupe);
+		free(groupe);
+	}
+	else if(tree == 0 && c -> str_opts[1] != NULL) {
+                int j = 1;
+                char *groupe = malloc(strlen(c -> str_opts[1]));
+                while(c -> str_opts[1][j] != '\0') {
+                        groupe[j - 1] = c -> str_opts[1][j];
+                        j++;
+                }
+                groupe[j - 1] = '\0';
+                job = atoi(groupe);
+                free(groupe);
+        }
+
 	check_jobs(c, 1);
 	for(int i = 0; i < c -> all_jobs; i++) {
-        	if (strcmp("Running", c->jobs[i].etat ) == 0 || strcmp("Stopped", c->jobs[i].etat ) == 0) 
+        	if ((job == 0 || c -> jobs[i].groupe == job) && (strcmp("Running", c->jobs[i].etat ) == 0 || strcmp("Stopped", c->jobs[i].etat ) == 0))
 		    print_job(c -> jobs[i], 1);
 	}
 	c -> val_retour = 0;
