@@ -3,6 +3,9 @@
 // verifie si l'argument est une commande interne
 int is_builtins(cmd *c) 
 { 
+    int indice_redir = parse_redir(c);
+	if (indice_redir == -1) exit(1);
+	petit_tab(indice_redir, c);
     if (strcmp("cd", c->str_opts[0]) == 0) // Change le repertoire de travail courant
     {
         char buf[PATH_MAX];
