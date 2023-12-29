@@ -32,7 +32,14 @@ void process(cmd *c, char ** envp, char *ligne)
     if (pid == -1)
         error();
     else if (pid == 0) {
-	    	setpgid(pid, 0);
+		struct sigaction action = {0};
+    	action.sa_handler = SIG_DFL;
+		sigaction(3, &action, NULL);
+		sigaction(22, &action, NULL);
+		sigaction(20, &action, NULL);
+		sigaction(15, &action, NULL);
+		sigaction(2, &action, NULL);
+		setpgid(pid, 0);
 		int indice_redir = parse_redir(c);
 		if (indice_redir == -1) exit(1);
 		petit_tab(indice_redir, c);

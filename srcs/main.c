@@ -10,13 +10,8 @@ int main(int argc, char const *argv[], char **envp)
 	// Gestion des signaux -----------------
 	// volatile sig_atomic_t signal_recu = 0;
 
-	// struct sigaction action = {0};
-    // action.sa_handler = SIG_IGN;
-	// sigaction(3, &action, NULL);
-	// sigaction(22, &action, NULL);
-	// sigaction(20, &action, NULL);
-	// sigaction(15, &action, NULL);
-	// sigaction(2, &action, NULL);
+	struct sigaction action = {0};
+    
 	// void handler () { 
 	// 	signal_recu = 1; 
 	// }
@@ -41,6 +36,12 @@ int main(int argc, char const *argv[], char **envp)
 	char * ligne = prompt(c);
 	c ->str_opts = NULL;
 	while(1) {
+		action.sa_handler = SIG_IGN;
+		sigaction(3, &action, NULL);
+		sigaction(22, &action, NULL);
+		sigaction(20, &action, NULL);
+		sigaction(15, &action, NULL);
+		sigaction(2, &action, NULL);
 		c ->str_opts = NULL;
 		if (ligne == NULL) 
 		{
