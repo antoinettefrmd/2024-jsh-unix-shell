@@ -36,26 +36,27 @@ void process(cmd *c, char ** envp, char *ligne)
 		int indice_redir = parse_redir(c);
 		if (indice_redir == -1) exit(1);
 		petit_tab(indice_redir, c);
-		if (!(is_builtins(c))) { // regarde si l'arg est une commande interne
-        	execute(c, envp); // execute la commande dans le processus fils
-		}
+        execute(c, envp); // execute la commande dans le processus fils
         exit(errno);
     }
-    else {
-        if (!c->bg) {
+    else 
+	{
+        if (!c->bg) 
+		{
 			job new = {.groupe = 0, .pid = pid, .etat = "Running", .ligne = ligne};
         		while(1) {
                         	status = INT_MIN;
                         	waitpid(-pid, &status, WUNTRACED | WNOHANG);
                         	if(status != INT_MIN) {
-					if(WIFSTOPPED(status)) {
-                                                new.etat = "Stopped";
-                                                print_job(new, 2);
+					if(WIFSTOPPED(status)) 
+					{
+						new.etat = "Stopped";
+						print_job(new, 2);
 						c -> nb_jobs = (c -> nb_jobs) + 1;
-            					c -> all_jobs = (c -> all_jobs) + 1;
-                                                add_job(c, pid, strdup(ligne), 0);
-                                                break;
-                                        }
+						c -> all_jobs = (c -> all_jobs) + 1;
+						add_job(c, pid, strdup(ligne), 0);
+						break;
+					}
 					else if (WIFEXITED(status)) {
                                 		c->val_retour = WEXITSTATUS(status); // récupère le statut du fils et le stocke dans val_retour
 						break;

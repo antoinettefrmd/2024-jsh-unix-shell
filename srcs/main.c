@@ -42,9 +42,7 @@ int main(int argc, char const *argv[], char **envp)
 			}
 			add_history(ligne);
 			if(c->str_opts[0] != NULL) {
-				if(strcmp("cd", c->str_opts[0]) == 0 || strcmp("exit", c->str_opts[0]) == 0 || strcmp("kill", c->str_opts[0]) == 0 || strcmp("jobs", c->str_opts[0]) == 0 || strcmp("fg", c->str_opts[0]) == 0)
-					is_builtins(c);
-				else {
+				if(!is_builtins(c)) {
 					if (c -> bg) {
 						process(c, envp, strndup(ligne, strlen(ligne) - 2)); // on considère alors que c'est une commande externe
 					}
