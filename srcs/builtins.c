@@ -1,7 +1,20 @@
 #include "shell.h"
 
 // verifie si l'argument est une commande interne
+
 int is_builtins(cmd *c) 
+{
+    return ((strcmp("cd", c->str_opts[0]) == 0) 
+    || (strcmp("pwd", c->str_opts[0]) == 0) 
+    || (strcmp("?", c->str_opts[0]) == 0) 
+    || (strcmp("exit", c->str_opts[0]) == 0)
+    || (strcmp("jobs", c->str_opts[0]) == 0)
+    || (strcmp("fg", c->str_opts[0]) == 0)
+    || (strcmp("kill", c->str_opts[0]) == 0)
+    || (strcmp("bg", c->str_opts[0]) == 0));
+}
+
+int builtins(cmd *c) 
 { 
     int indice_redir = parse_redir(c);
     if (indice_redir == -1) exit(1);

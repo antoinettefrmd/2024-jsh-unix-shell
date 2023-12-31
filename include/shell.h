@@ -63,6 +63,7 @@ int nb_digits(int n);
 // builtins fonctions
 
 int is_builtins(cmd *c);
+int builtins(cmd *c);
 int pwd ();
 void print_val_ret(int val) ;
 int cd(char *ref);

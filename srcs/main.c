@@ -12,9 +12,7 @@ int main(int argc, char const *argv[], char **envp)
 	c -> all_jobs = 0;
 	c -> jobs = NULL;
 	c -> val_retour = 0;
-	c -> fd_in = 0;
-	c -> fd_out = 1;
-	c -> fd_err = 2;
+
 	int in = dup(0); //sauvergarde des redirections
 	int out = dup(1);
 	int err = dup(2);
@@ -25,6 +23,9 @@ int main(int argc, char const *argv[], char **envp)
 	char * ligne = prompt(c);
 	c ->str_opts = NULL;
 	while(1) {
+		c -> fd_in = 0;
+		c -> fd_out = 1;
+		c -> fd_err = 2;
 		c ->str_opts = NULL;
 		if (ligne == NULL) 
 		{
@@ -48,6 +49,7 @@ int main(int argc, char const *argv[], char **envp)
 					}
 					else process(c, envp, strdup(ligne));
 				}
+				else builtins(c);
 			}
 		}
 		free_cmd(c, 0); // free seulement le tableau des commandes et options
