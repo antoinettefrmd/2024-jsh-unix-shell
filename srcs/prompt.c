@@ -12,11 +12,11 @@ char * fmt_cwd(char * cwd, int jobs_len) {
 		res[i] = '\0';
 		return res;
 	}
-	char * res = malloc(26 - jobs_len);
-	res[25 - jobs_len] = '\0';
+	char * res = malloc(27 - jobs_len);
+	res[26 - jobs_len] = '\0';
 	int i = len - 1;
 	int j;
-	for(j = 24 - jobs_len; j >= 3; j--) {
+	for(j = 25 - jobs_len; j >= 3; j--) {
 		res[j] = cwd[i];
 		i--;
 	}
@@ -62,17 +62,12 @@ char * prompt(struct cmd *c) {
 		exit(1);
 	}
 
-	int digits = 1;
-	int nb_jobs = c -> nb_jobs;
-	while((nb_jobs / 10) != 0) {
-		digits++;
-		nb_jobs = nb_jobs / 10;
-	}
+	int digits = nb_digits(c -> nb_jobs);
 	char * jobs = malloc(digits + 1);
-	jobs[0] = '\0';
+	jobs[digits] = '\0';
 	sprintf(jobs, "%d", c -> nb_jobs);
 
-	char * f_cwd = fmt_cwd(cwd, strlen(jobs));
+	char * f_cwd = fmt_cwd(cwd, digits);
 	char * pr1 = "\001\033[32m\002[";
 	char * pr2 = "]\001\033[34m\002";
 	char * pr3 = "\001\033[00m\002$ ";
