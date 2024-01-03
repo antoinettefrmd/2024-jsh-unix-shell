@@ -3,6 +3,7 @@
 // verifie si l'argument est une commande interne
 int is_builtins(cmd *c) 
 { 
+    
     if (strcmp("cd", c->str_opts[0]) == 0) // Change le repertoire de travail courant
     { 
         if (c->str_opts[1] == NULL) { 
