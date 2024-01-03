@@ -2,20 +2,11 @@
 
 int main(int argc, char const *argv[], char **envp)
 {
-	
+	ignore_signals();
 	if (argc != 1) {
 		write(2, "Just launch without args\n", 25);
 		exit(1);
 	}
-	// Gestion des signaux -----------------
-	// volatile sig_atomic_t signal_recu = 0;
-
-	struct sigaction action = {0};
-    
-	// void handler () { 
-	// 	signal_recu = 1; 
-	// }
-	// -------------------------------------
 
 	(void)argv;
 	struct cmd *c = malloc(sizeof (cmd));
@@ -23,9 +14,7 @@ int main(int argc, char const *argv[], char **envp)
 	c -> all_jobs = 0;
 	c -> jobs = NULL;
 	c -> val_retour = 0;
-	c -> fd_in = 0;
-	c -> fd_out = 1;
-	c -> fd_err = 2;
+
 	int in = dup(0); //sauvergarde des redirections
 	int out = dup(1);
 	int err = dup(2);
@@ -36,12 +25,10 @@ int main(int argc, char const *argv[], char **envp)
 	char * ligne = prompt(c);
 	c ->str_opts = NULL;
 	while(1) {
-		action.sa_handler = SIG_IGN;
-		sigaction(3, &action, NULL);
-		sigaction(22, &action, NULL);
-		sigaction(20, &action, NULL);
-		sigaction(15, &action, NULL);
-		sigaction(2, &action, NULL);
+		ignore_signals();
+		c -> fd_in = 0;
+		c -> fd_out = 1;
+		c -> fd_err = 2;
 		c ->str_opts = NULL;
 		if (ligne == NULL) 
 		{
@@ -59,14 +46,13 @@ int main(int argc, char const *argv[], char **envp)
 			}
 			add_history(ligne);
 			if(c->str_opts[0] != NULL) {
-				if(strcmp("cd", c->str_opts[0]) == 0 || strcmp("exit", c->str_opts[0]) == 0 || strcmp("kill", c->str_opts[0]) == 0 || strcmp("jobs", c->str_opts[0]) == 0)
-					is_builtins(c);
-				else {
+				if(!is_builtins(c)) {
 					if (c -> bg) {
 						process(c, envp, strndup(ligne, strlen(ligne) - 2)); // on considère alors que c'est une commande externe
 					}
 					else process(c, envp, strdup(ligne));
 				}
+				else builtins(c);
 			}
 		}
 		free_cmd(c, 0); // free seulement le tableau des commandes et options

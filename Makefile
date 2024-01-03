@@ -26,7 +26,7 @@ MAGENTA		=	\033[0;95m
 CYAN		=	\033[0;96m
 WHITE		=	\033[0;97m
 
-SRC_FILES	=	split lib exec process main builtins prompt jobs parsing_redir
+SRC_FILES	=	split lib exec process main builtins prompt jobs parsing_redir signaux
 
 
 SRC			=	$(addprefix $(SRC_DIR), $(addsuffix .c, $(SRC_FILES)))

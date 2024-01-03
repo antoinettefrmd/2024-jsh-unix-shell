@@ -36,6 +36,11 @@ typedef struct cmd {
     int fd_err;
 } cmd; 
 
+// signaux functions
+
+void ignore_signals();
+void cmprtment_par_defaut();
+
 //parsing_redir
 int parse_redir(cmd *c);
 int redir_fic(cmd *c);
@@ -63,12 +68,15 @@ int nb_digits(int n);
 // builtins fonctions
 
 int is_builtins(cmd *c);
+int builtins(cmd *c);
 int pwd ();
 void print_val_ret(int val) ;
 int cd(char *ref);
 void exit_maison ();
 void jobs (cmd *c);
 void kill_maison(cmd *c);
+void fg(cmd *c);
+void bg(cmd *c);
 
 // prompt fonctions
 

@@ -102,14 +102,17 @@ int redir_fic(cmd *c)
 	if (c->fd_out != STDOUT_FILENO)
 	{
 		err1 = dup2(c->fd_out, STDOUT_FILENO); // effectue la redirection de la sortie standard
+		close(c->fd_out);
 	}
 	if (c->fd_in != STDIN_FILENO)
 	{
 		err2 = dup2(c->fd_in, STDIN_FILENO); // effectue la redirection de l'entrée standard
+		close(c->fd_in);
 	}
 	if (c->fd_err != STDERR_FILENO)
 	{
 		err3 = dup2(c->fd_err, STDERR_FILENO); // effectue la redirection de la sortie erreur
+		close(c->fd_err);
 	}
 	if (err1 == -1 ||err2 == -1 || err3 == -1)
 	{
