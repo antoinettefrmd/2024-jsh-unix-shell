@@ -56,16 +56,15 @@ void process(cmd *c, char ** envp, char *ligne)
 	{
         if (!c->bg) 
 		{
-			job new = {.groupe = 0, .pid = pid, .etat = "Running", .ligne = ligne};
         		while(1) {
 				status = INT_MIN;
                         	waitpid(-pid, &status, WUNTRACED | WNOHANG);
                         	if(status != INT_MIN) {
 					if(WIFSTOPPED(status)) {
-						new.etat = "Stopped";
-						print_job(new, 2);
 						c -> nb_jobs = (c -> nb_jobs) + 1;
 						c -> all_jobs = (c -> all_jobs) + 1;
+						job new = {.groupe = (c -> all_jobs), .pid = pid, .etat = "Stopped", .ligne = ligne};
+						print_job(new, 2);
 						add_job(c, pid, strdup(ligne), 0);
 						break;
 					}
