@@ -51,26 +51,27 @@ void process(cmd *c, char ** envp, char *ligne, int *fd)
     if (pid == -1)
         error();
     else if (pid == 0) {
-	setpgid(getpid(), 0);
-	if(!c->bg) {
-		sigset_t *set = malloc(sizeof(sigset_t));
-		sigemptyset(set);
-		sigaddset(set, SIGTTIN);
-		sigaddset(set, SIGTTOU);
+		cmprtment_par_defaut();
+		setpgid(getpid(), 0);
+		if(!c->bg) {
+			sigset_t *set = malloc(sizeof(sigset_t));
+			sigemptyset(set);
+			sigaddset(set, SIGTTIN);
+			sigaddset(set, SIGTTOU);
         	sigprocmask(SIG_BLOCK, set, NULL);
-		tcsetpgrp(0, getpid());
-		tcsetpgrp(1, getpid());
-		tcsetpgrp(2, getpid());
-		sigprocmask(SIG_UNBLOCK, set, NULL);
-		free(set);
-	}
-	if (c->next)
-		child_process(c, fd, envp);
-	else if (is_pipe(ligne))
-		parent_process(c, fd, envp);
-	int indice_redir = parse_redir(c);
-	if (indice_redir == -1) exit(1);
-	petit_tab(indice_redir, c);
+			tcsetpgrp(0, getpid());
+			tcsetpgrp(1, getpid());
+			tcsetpgrp(2, getpid());
+			sigprocmask(SIG_UNBLOCK, set, NULL);
+			free(set);
+		}
+		if (c->next)
+			child_process(c, fd, envp);
+		else if (is_pipe(ligne))
+			parent_process(c, fd, envp);
+		int indice_redir = parse_redir(c);
+		if (indice_redir == -1) exit(1);
+		petit_tab(indice_redir, c);
         execute(c, envp); // execute la commande dans le processus fils
         exit(errno);
     }
@@ -78,16 +79,15 @@ void process(cmd *c, char ** envp, char *ligne, int *fd)
 	{
         if (!c->bg) 
 		{
-			job new = {.groupe = 0, .pid = pid, .etat = "Running", .ligne = ligne};
         		while(1) {
 				status = INT_MIN;
                         	waitpid(-pid, &status, WUNTRACED);
                         	if(status != INT_MIN) {
 					if(WIFSTOPPED(status)) {
-						new.etat = "Stopped";
-						print_job(new, 2);
 						c -> nb_jobs = (c -> nb_jobs) + 1;
 						c -> all_jobs = (c -> all_jobs) + 1;
+						job new = {.groupe = (c -> all_jobs), .pid = pid, .etat = "Stopped", .ligne = ligne};
+						print_job(new, 2);
 						add_job(c, pid, strdup(ligne), 0);
 						break;
 					}

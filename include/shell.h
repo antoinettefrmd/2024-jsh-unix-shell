@@ -38,6 +38,11 @@ typedef struct cmd {
     int nb_c;
 } cmd; 
 
+// signaux functions
+
+void ignore_signals();
+void cmprtment_par_defaut();
+
 //parsing_redir
 int parse_redir(cmd *c);
 int redir_fic(cmd *c);
