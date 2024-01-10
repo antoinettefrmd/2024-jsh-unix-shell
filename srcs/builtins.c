@@ -1,7 +1,7 @@
 #include "shell.h"
 
 // verifie si l'argument est une commande interne
-int is_builtins(cmd *c) 
+int is_builtins(cmd *c, int in, int out, int err) 
 { 
     
     if (strcmp("cd", c->str_opts[0]) == 0) // Change le repertoire de travail courant
@@ -15,7 +15,7 @@ int is_builtins(cmd *c)
             else 
             {
                 write(2, "home undefined\n", 16);
-                exit_maison(c);
+                exit_maison(c, in, out, err);
             }
         }
         else if(strcmp("-", c->str_opts[1]) == 0) 
@@ -44,7 +44,7 @@ int is_builtins(cmd *c)
     if (strcmp("exit", c->str_opts[0]) == 0) // Nous sort du programme en s'assurant d'avoir bien tout free et en renvoyant une valeur qui explique son arrêt
     {
         // si l'indice est différent de la taille
-        exit_maison(c);
+        exit_maison(c, in, out, err);
         return 1;
     }
     if (strcmp("jobs", c->str_opts[0]) == 0)
@@ -134,7 +134,7 @@ int cd (char *ref)
 }
 
 // Sortie de programme qui free les derniers malloc et renvoie la valeur qui explique l'arrêt
-void exit_maison (cmd *c) 
+void exit_maison (cmd *c, int in, int out, int err) 
 {
    for (int i = 0; i < c -> all_jobs; i++) 
    {
@@ -153,7 +153,10 @@ void exit_maison (cmd *c)
             tmp = atoi(c->str_opts[1]); // si exit prends une valeur de retour en argument, c'est elle qui est renvoyée
         }
         free_cmd(c, 1); //free la le tableau d'arg ET la strucuture commande
-    } 
+    }
+    close(in);
+    close(out);
+    close(err);
     exit(tmp);
 }
 

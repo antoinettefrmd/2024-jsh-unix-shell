@@ -72,3 +72,43 @@ void	execute(cmd *c, char **envp)
 		return;
 	}
 }
+
+void	execloop(cmd *commande, char *ligne, char **envp, int in, int out, int err)
+{
+	cmd *c;
+	int fd[2];
+
+	c = parsing_pipe(ligne, commande); // répartit la commande dans le tableau pour separer les arguments
+	while (c)
+	{
+		printf("loop\n");
+		c->bg = 0;
+		if(strcmp(ligne, "") != 0) {
+			if (!strcmp(last_cmd(c->str_opts), "&"))
+			{
+				c->bg = 1;
+				free(c -> str_opts[tablen(c->str_opts)]);
+				c->str_opts[tablen(c->str_opts)] = NULL;
+			}
+			add_history(ligne);
+			if(c->str_opts[0] != NULL) {
+				if(strcmp("cd", c->str_opts[0]) == 0 || strcmp("exit", c->str_opts[0]) == 0 || strcmp("kill", c->str_opts[0]) == 0 || strcmp("jobs", c->str_opts[0]) == 0)
+					is_builtins(c, in, out, err);
+				else {
+					if (c -> bg) {
+						process(c, envp, strndup(ligne, strlen(ligne) - 2), fd, in, out, err); // on considère alors que c'est une commande externe
+					}
+					else process(c, envp, strdup(ligne), fd, in, out, err);
+				}
+			}
+		}
+		free_cmd(c, 0); // free seulement le tableau des commandes et options
+		//free(ligne);
+		check_jobs(c, 2);
+		c = c->next;
+		if (c && c->next == NULL)
+			close(fd[1]);
+		else if (is_pipe(ligne))
+			close(fd[0]);
+	}
+}

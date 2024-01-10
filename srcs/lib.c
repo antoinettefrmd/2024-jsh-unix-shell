@@ -169,3 +169,12 @@ int nb_digits(int n) {
         }
 	return digits;
 }
+
+int	is_pipe(char *str)
+{
+	for (int i = 0; (size_t)i < strlen(str); i++) {
+		if (str[i] == '|')
+			return (1);
+	}
+	return (0);
+}
