@@ -29,35 +29,16 @@ int main(int argc, char const *argv[], char **envp)
 		c ->str_opts = NULL;
 		if (ligne == NULL) 
 		{
-			exit_maison(c, 1);
+			exit_maison(c);
 			return 0;
 		}
-		c->bg = 0;
-        	c->str_opts = split(ligne, ' '); // répartit la commande dans le tableau pour separer les arguments
-		if(strcmp(ligne, "") != 0) {
-			if (!strcmp(last_cmd(c->str_opts), "&"))
-			{
-				c->bg = 1;
-				free(c -> str_opts[tablen(c->str_opts)]);
-				c->str_opts[tablen(c->str_opts)] = NULL;
-			}
-			add_history(ligne);
-			if(c->str_opts[0] != NULL) {
-				if(!is_builtins(c)) {
-					if (c -> bg) {
-						process(c, envp, strndup(ligne, strlen(ligne) - 2)); // on considère alors que c'est une commande externe
-					}
-					else process(c, envp, strdup(ligne));
-				}
-				else builtins(c);
-			}
-		}
-		free_cmd(c, 0); // free seulement le tableau des commandes et options
-		free(ligne);
-		check_jobs(c, 2);
+		execloop(c, ligne, envp);
 		dup2(in, STDIN_FILENO); // Remets l'entrée standard potentiellement redirigée sur la vraie entrée standard
 		dup2(out, STDOUT_FILENO); // Remets la sortie standard potentiellement redirigée sur la vraie sortie standard
 		dup2(err, STDERR_FILENO); // Remets la sortie erreur potentiellement redirigée sur la vraie erreur standard
+		close(in);
+		close(out);
+		close(err);
 		ligne = prompt(c);
 	}
 	close(in);

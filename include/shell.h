@@ -34,16 +34,20 @@ typedef struct cmd {
     int fd_in;
     int fd_out;
     int fd_err;
+    struct cmd *next;
+    int nb_c;
 } cmd; 
 
 //parsing_redir
 int parse_redir(cmd *c);
 int redir_fic(cmd *c);
+cmd    *parsing_pipe(char *str, cmd *commande);
+int     nb_cmd(cmd *c);
 
 //exec functions
-
+void	execloop(cmd *commande, char *ligne, char **envp);
 void	execute(cmd *c, char **envp);
-void    process(cmd *c, char ** envp, char *ligne);
+void    process(cmd *c, char ** envp, char *ligne, int *fd);
 void	error(void);
 
 // string utils functions
@@ -53,7 +57,8 @@ char	**split(char const *s, char c);
 void    free_cmd(cmd *c, int free_all);
 char    *last_cmd(char **cmd);
 int	    tablen(char **cmd);
-void    petit_tab(int i, cmd *c);     
+void    petit_tab(int i, cmd *c);   
+int	    is_pipe(char *str);  
 void    error_open();   
 
 // int utils functions
@@ -67,7 +72,7 @@ int builtins(cmd *c);
 int pwd ();
 void print_val_ret(int val) ;
 int cd(char *ref);
-void exit_maison ();
+void exit_maison (cmd *c);
 void jobs (cmd *c);
 void kill_maison(cmd *c);
 void fg(cmd *c);

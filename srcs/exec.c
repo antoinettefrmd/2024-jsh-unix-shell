@@ -72,3 +72,42 @@ void	execute(cmd *c, char **envp)
 		return;
 	}
 }
+
+void	execloop(cmd *commande, char *ligne, char **envp)
+{
+	cmd *c;
+	int fd[2];
+
+	c = parsing_pipe(ligne, commande); // répartit la commande dans le tableau pour separer les arguments
+	c -> nb_c = nb_cmd(c);
+	while (c)
+	{
+		c->bg = 0;
+		if(strcmp(ligne, "") != 0) {
+			if (!strcmp(last_cmd(c->str_opts), "&"))
+			{
+				c->bg = 1;
+				free(c -> str_opts[tablen(c->str_opts)]);
+				c->str_opts[tablen(c->str_opts)] = NULL;
+			}
+			add_history(ligne);
+			if(c->str_opts[0] != NULL) {
+				if(!is_builtins(c)) {
+					if (c -> bg) {
+						process(c, envp, strndup(ligne, strlen(ligne) - 2), fd); // on considère alors que c'est une commande externe
+					}
+					else process(c, envp, strdup(ligne),fd);
+				}
+				else builtins(c);
+			}
+		}
+		free_cmd(c, 0); // free seulement le tableau des commandes et options
+		check_jobs(c, 2);
+		c = c->next;
+		if (c && c->next == NULL)
+			close(fd[1]);
+		else if (is_pipe(ligne))
+			close(fd[0]);
+	}
+	free(ligne);
+}

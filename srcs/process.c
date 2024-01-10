@@ -15,10 +15,24 @@ void add_job(cmd *c, pid_t pid, char *ligne, int run) {
         newJobs[nb - 1] = new;
 	if(run) print_job(new, 2);
 	c -> jobs = newJobs;
-}	
+}
+
+void	child_process(cmd *c, int *fd, char **envp)
+{
+	dup2(fd[1], STDOUT_FILENO);
+	close(fd[0]);
+	execute(c, envp);
+}
+
+void	parent_process(cmd *c, int *fd, char **envp)
+{
+	dup2(fd[0], STDIN_FILENO);
+	close(fd[1]);
+	execute(c, envp);
+}
 
 // créé un processus fils pour executer une commande externe
-void process(cmd *c, char ** envp, char *ligne)
+void process(cmd *c, char ** envp, char *ligne, int *fd)
 {
     pid_t   pid;
     int     status;
@@ -28,6 +42,11 @@ void process(cmd *c, char ** envp, char *ligne)
 	    c -> all_jobs = (c -> all_jobs) + 1;
     }
 
+	if (c->next)
+	{
+		pipe(fd);
+	}
+	
     pid = fork();
     if (pid == -1)
         error();
@@ -45,20 +64,24 @@ void process(cmd *c, char ** envp, char *ligne)
 		sigprocmask(SIG_UNBLOCK, set, NULL);
 		free(set);
 	}
+	if (c->next)
+		child_process(c, fd, envp);
+	else if (is_pipe(ligne))
+		parent_process(c, fd, envp);
 	int indice_redir = parse_redir(c);
 	if (indice_redir == -1) exit(1);
 	petit_tab(indice_redir, c);
         execute(c, envp); // execute la commande dans le processus fils
         exit(errno);
     }
-    else 
+    if (c->next == NULL) 
 	{
         if (!c->bg) 
 		{
 			job new = {.groupe = 0, .pid = pid, .etat = "Running", .ligne = ligne};
         		while(1) {
 				status = INT_MIN;
-                        	waitpid(-pid, &status, WUNTRACED | WNOHANG);
+                        	waitpid(-pid, &status, WUNTRACED);
                         	if(status != INT_MIN) {
 					if(WIFSTOPPED(status)) {
 						new.etat = "Stopped";
@@ -69,14 +92,14 @@ void process(cmd *c, char ** envp, char *ligne)
 						break;
 					}
 					else if (WIFEXITED(status)) {
-                                		c->val_retour = WEXITSTATUS(status); // récupère le statut du fils et le stocke dans val_retour
+										c->val_retour = WEXITSTATUS(status); // récupère le statut du fils et le stocke dans val_retour
 						break;
-                        		}
+								}
 					else if(WIFSIGNALED(status)) {
                                        		c->val_retour = 1;
 						break;
-                                	}
-                        	}
+									}
+							}
 			}
 			free(ligne);
 			sigset_t *set = malloc(sizeof(sigset_t));
@@ -92,6 +115,6 @@ void process(cmd *c, char ** envp, char *ligne)
         }
         else {
 		add_job(c, pid, ligne, 1);
+		}
 	}
-    }
 }
