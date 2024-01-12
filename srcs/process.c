@@ -75,7 +75,7 @@ void process(cmd *c, char ** envp, char *ligne, int *fd)
         execute(c, envp); // execute la commande dans le processus fils
         exit(errno);
     }
-    if (c->next == NULL) 
+    else
 	{
         if (!c->bg) 
 		{

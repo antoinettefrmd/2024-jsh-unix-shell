@@ -82,11 +82,9 @@ void	execloop(cmd *commande, char *ligne, char **envp)
 	c -> nb_c = nb_cmd(c);
 	while (c)
 	{
-		c->bg = 0;
 		if(strcmp(ligne, "") != 0) {
 			if (!strcmp(last_cmd(c->str_opts), "&"))
 			{
-				c->bg = 1;
 				free(c -> str_opts[tablen(c->str_opts)]);
 				c->str_opts[tablen(c->str_opts)] = NULL;
 			}
