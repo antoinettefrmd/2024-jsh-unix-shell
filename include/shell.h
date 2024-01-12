@@ -44,9 +44,10 @@ void ignore_signals();
 void cmprtment_par_defaut();
 
 //parsing_redir
-int parse_redir(cmd *c);
-int redir_fic(cmd *c);
-cmd    *parsing_pipe(char *str, cmd *commande);
+int     parse_redir(cmd *c);
+int     redir_fic(cmd *c);
+char    **pipe_split(char *str);
+cmd     *parsing_pipe(char *str, cmd *commande);
 int     nb_cmd(cmd *c);
 
 //exec functions
@@ -64,7 +65,8 @@ char    *last_cmd(char **cmd);
 int	    tablen(char **cmd);
 void    petit_tab(int i, cmd *c);   
 int	    is_pipe(char *str);  
-void    error_open();   
+void    error_open(); 
+void	print_cmd(cmd *c);  
 
 // int utils functions
 

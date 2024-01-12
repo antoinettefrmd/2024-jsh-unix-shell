@@ -3,7 +3,7 @@
 cmd    *parsing_pipe(char *str, cmd *commande)
 {
 
-    char    **pipes = split(str, '|');
+    char    **pipes = pipe_split(str);
     cmd *tmp = commande;
     int bg = str[strlen(str) - 1] == '&';
     commande->bg = bg;

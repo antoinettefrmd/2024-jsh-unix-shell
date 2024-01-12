@@ -82,6 +82,7 @@ void	execloop(cmd *commande, char *ligne, char **envp)
 	c -> nb_c = nb_cmd(c);
 	while (c)
 	{
+		//print_cmd(c);
 		if(strcmp(ligne, "") != 0) {
 			if (!strcmp(last_cmd(c->str_opts), "&"))
 			{
