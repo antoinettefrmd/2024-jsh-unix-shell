@@ -192,8 +192,18 @@ int nb_digits(int n) {
 int	is_pipe(char *str)
 {
 	for (int i = 0; (size_t)i < strlen(str); i++) {
-		if (str[i] == '|')
+		if (str[i] == '|' && str[i - 1] != '<' && str[i - 1] != '>')
 			return (1);
 	}
 	return (0);
+}
+
+void	print_cmd(cmd *c) {
+	int	i = 0;
+	printf("commande = ");
+	while (c->str_opts[i]) {
+		printf("%s ", c->str_opts[i]);
+		i++;
+	}
+	printf("\n");
 }
