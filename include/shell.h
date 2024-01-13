@@ -16,6 +16,10 @@
 # include <signal.h>
 #include <bsd/bsd.h>
 
+int e_in;
+int s_out;
+int s_err;
+
 typedef struct job {
 	pid_t groupe;
 	pid_t pid;
@@ -65,6 +69,7 @@ int	    tablen(char **cmd);
 void    petit_tab(int i, cmd *c);   
 int	    is_pipe(char *str);  
 void    error_open();   
+void    print_cmd(cmd *c);
 
 // int utils functions
 

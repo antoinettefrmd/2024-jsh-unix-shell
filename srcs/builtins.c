@@ -179,6 +179,9 @@ void exit_maison (cmd *c)
         }
         free_cmd(c, 1); //free la le tableau d'arg ET la strucuture commande
     } 
+    close(e_in);
+    close(s_out);
+    close(s_err);
     exit(tmp);
 }
 

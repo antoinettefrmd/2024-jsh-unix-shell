@@ -80,8 +80,12 @@ void	execloop(cmd *commande, char *ligne, char **envp)
 
 	c = parsing_pipe(ligne, commande); // répartit la commande dans le tableau pour separer les arguments
 	c -> nb_c = nb_cmd(c);
+	c -> fd_in = 0;
+	c -> fd_out = 1;
+	c -> fd_err = 2;
 	while (c)
 	{
+		
 		c->bg = 0;
 		if(strcmp(ligne, "") != 0) {
 			if (!strcmp(last_cmd(c->str_opts), "&"))

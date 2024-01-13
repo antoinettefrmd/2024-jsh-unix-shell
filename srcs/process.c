@@ -75,14 +75,14 @@ void process(cmd *c, char ** envp, char *ligne, int *fd)
         execute(c, envp); // execute la commande dans le processus fils
         exit(errno);
     }
-    if (c->next == NULL) 
+    else 
 	{
         if (!c->bg) 
 		{
-        		while(1) {
+			while(1) {
 				status = INT_MIN;
-                        	waitpid(-pid, &status, WUNTRACED);
-                        	if(status != INT_MIN) {
+				waitpid(-pid, &status, WUNTRACED);
+				if(status != INT_MIN) {
 					if(WIFSTOPPED(status)) {
 						c -> nb_jobs = (c -> nb_jobs) + 1;
 						c -> all_jobs = (c -> all_jobs) + 1;
@@ -92,26 +92,26 @@ void process(cmd *c, char ** envp, char *ligne, int *fd)
 						break;
 					}
 					else if (WIFEXITED(status)) {
-										c->val_retour = WEXITSTATUS(status); // récupère le statut du fils et le stocke dans val_retour
+						c->val_retour = WEXITSTATUS(status); // récupère le statut du fils et le stocke dans val_retour
 						break;
-								}
+					}
 					else if(WIFSIGNALED(status)) {
-                                       		c->val_retour = 1;
+						c->val_retour = 1;
 						break;
-									}
-							}
+					}
+				}
 			}
 			free(ligne);
 			sigset_t *set = malloc(sizeof(sigset_t));
-                	sigemptyset(set);
-         		sigaddset(set, SIGTTIN);
-                	sigaddset(set, SIGTTOU);
-                	sigprocmask(SIG_BLOCK, set, NULL);
-                	tcsetpgrp(0, getpid());
-                	tcsetpgrp(1, getpid());
-                	tcsetpgrp(2, getpid());
-                	sigprocmask(SIG_UNBLOCK, set, NULL);
-                	free(set);
+			sigemptyset(set);
+			sigaddset(set, SIGTTIN);
+			sigaddset(set, SIGTTOU);
+			sigprocmask(SIG_BLOCK, set, NULL);
+			tcsetpgrp(0, getpid());
+			tcsetpgrp(1, getpid());
+			tcsetpgrp(2, getpid());
+			sigprocmask(SIG_UNBLOCK, set, NULL);
+			free(set);
         }
         else {
 		add_job(c, pid, ligne, 1);
