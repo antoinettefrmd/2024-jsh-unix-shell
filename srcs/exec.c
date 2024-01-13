@@ -76,10 +76,11 @@ void	execute(cmd *c, char **envp)
 void	execloop(cmd *commande, char *ligne, char **envp)
 {
 	cmd *c;
-	int fd[2];
+	int	i = 0;
 
 	c = parsing_pipe(ligne, commande); // répartit la commande dans le tableau pour separer les arguments
 	c -> nb_c = nb_cmd(c);
+	int fd[c->nb_c > 1 ? 1 : c->nb_c - 1][2];
 	while (c)
 	{
 		//print_cmd(c);
@@ -93,9 +94,9 @@ void	execloop(cmd *commande, char *ligne, char **envp)
 			if(c->str_opts[0] != NULL) {
 				if(!is_builtins(c)) {
 					if (c -> bg) {
-						process(c, envp, strndup(ligne, strlen(ligne) - 2), fd); // on considère alors que c'est une commande externe
+						process(c, envp, strndup(ligne, strlen(ligne) - 2), fd[i]); // on considère alors que c'est une commande externe
 					}
-					else process(c, envp, strdup(ligne),fd);
+					else process(c, envp, strdup(ligne),fd[i]);
 				}
 				else builtins(c);
 			}
@@ -104,9 +105,9 @@ void	execloop(cmd *commande, char *ligne, char **envp)
 		check_jobs(c, 2);
 		c = c->next;
 		if (c && c->next == NULL)
-			close(fd[1]);
+			close(fd[i][1]);
 		else if (is_pipe(ligne))
-			close(fd[0]);
+			close(fd[i][0]);
 	}
 	free(ligne);
 }
