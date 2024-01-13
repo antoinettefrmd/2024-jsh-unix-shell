@@ -31,7 +31,8 @@ char	*strjoin(char const *s1, char const *s2) // concatène deux chaînes et ret
 
 void petit_tab(int i, cmd *c)
 {
-	for(int j = i ; j < tablen(c->str_opts) ; j++)
+	int cpt = tablen(c->str_opts);
+	for(int j = i ; j <= cpt ; j++)
 	{
 		free(c->str_opts[j]);
 		c->str_opts[j] = NULL;
@@ -198,12 +199,12 @@ int	is_pipe(char *str)
 	return (0);
 }
 
-void	print_cmd(cmd *c) {
-	int	i = 0;
-	printf("commande = ");
-	while (c->str_opts[i]) {
-		printf("%s ", c->str_opts[i]);
-		i++;
-	}
-	printf("\n");
+void    print_cmd(cmd *c) {
+    int    i = 0;
+    printf("commande = ");
+    while (c->str_opts[i]) {
+        printf("%s ", c->str_opts[i]);
+        i++;
+    }
+    printf("\n");
 }

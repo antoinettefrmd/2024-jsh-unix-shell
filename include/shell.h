@@ -16,6 +16,10 @@
 # include <signal.h>
 #include <bsd/bsd.h>
 
+int e_in;
+int s_out;
+int s_err;
+
 typedef struct job {
 	pid_t groupe;
 	pid_t *pid;
