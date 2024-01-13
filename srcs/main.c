@@ -1,5 +1,9 @@
 #include "shell.h"
 
+int e_in;
+int s_out;
+int s_err;
+
 int main(int argc, char const *argv[], char **envp)
 {
 	ignore_signals();
