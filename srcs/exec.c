@@ -85,12 +85,10 @@ void	execloop(cmd *commande, char *ligne, char **envp)
 	c -> fd_err = 2;
 	while (c)
 	{
-		
-		c->bg = 0;
+		//print_cmd(c);
 		if(strcmp(ligne, "") != 0) {
 			if (!strcmp(last_cmd(c->str_opts), "&"))
 			{
-				c->bg = 1;
 				free(c -> str_opts[tablen(c->str_opts)]);
 				c->str_opts[tablen(c->str_opts)] = NULL;
 			}

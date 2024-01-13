@@ -126,8 +126,14 @@ int redir_fic(cmd *c)
 void free_jobs(cmd *c) {
 	if(c -> jobs != NULL) 
 	{
+		job * jobs = c -> jobs;
 		for(int i = 0; i < c -> all_jobs; i++) {
-				free((c -> jobs)[i].ligne);
+			free(jobs[i].pid);
+			free(jobs[i].etat);
+			for(int j = 0; j < jobs[i].nb_process; j++) {
+				free(jobs[i].ligne[j]);
+			}
+			free(jobs[i].ligne);
 		}
 		free(c -> jobs);
 	}
@@ -187,7 +193,7 @@ int nb_digits(int n) {
 int	is_pipe(char *str)
 {
 	for (int i = 0; (size_t)i < strlen(str); i++) {
-		if (str[i] == '|')
+		if (str[i] == '|' && str[i - 1] != '<' && str[i - 1] != '>')
 			return (1);
 	}
 	return (0);

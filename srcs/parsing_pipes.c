@@ -2,8 +2,11 @@
 
 cmd    *parsing_pipe(char *str, cmd *commande)
 {
-    char    **pipes = split(str, '|');
+
+	int bg = strlen(str) != 0 && str[strlen(str) - 1] == '&';
+    char    **pipes = pipe_split(str);
     cmd *tmp = commande;
+    commande->bg = bg;
     for (int i = 0; i < tablen(pipes) + 1; i++) {
 
         commande->str_opts = split(pipes[i], ' ');
@@ -18,6 +21,7 @@ cmd    *parsing_pipe(char *str, cmd *commande)
             commande -> next -> fd_in = 0;
             commande -> next -> fd_out = 1;
             commande -> next -> fd_err = 2;
+            commande -> next -> bg = bg;
             commande -> next -> nb_c = commande -> nb_c;
             commande = commande->next;
         }

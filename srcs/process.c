@@ -1,7 +1,7 @@
 #include "shell.h"
 
 
-void add_job(cmd *c, pid_t pid, char *ligne, int run) {
+void add_job(cmd *c, pid_t pid, char *ligne, char *etat, int print) {
 	int nb = c -> all_jobs;
 	job *newJobs = malloc(nb * sizeof(job));
 	if(c -> jobs != NULL) {
@@ -10,10 +10,12 @@ void add_job(cmd *c, pid_t pid, char *ligne, int run) {
 		}
 		free(c -> jobs);
 	}
-	job new = {.groupe = (c -> all_jobs), .pid = pid, .etat = "Stopped", .ligne = ligne};
-	if(run) new.etat = "Running";
-        newJobs[nb - 1] = new;
-	if(run) print_job(new, 2);
+	job new = {.groupe = (c -> all_jobs), .pid = malloc(sizeof(int)), .etat = malloc(sizeof(char *)), .ligne = malloc(sizeof(char *)), .nb_process = 1};
+	new.pid[0] = pid;
+	new.etat[0] = etat;
+	new.ligne[0] = ligne;
+    newJobs[nb - 1] = new;
+	if(print) print_job(new, 2);
 	c -> jobs = newJobs;
 }
 
@@ -58,7 +60,7 @@ void process(cmd *c, char ** envp, char *ligne, int *fd)
 			sigemptyset(set);
 			sigaddset(set, SIGTTIN);
 			sigaddset(set, SIGTTOU);
-        	sigprocmask(SIG_BLOCK, set, NULL);
+			sigprocmask(SIG_BLOCK, set, NULL);
 			tcsetpgrp(0, getpid());
 			tcsetpgrp(1, getpid());
 			tcsetpgrp(2, getpid());
@@ -75,20 +77,18 @@ void process(cmd *c, char ** envp, char *ligne, int *fd)
         execute(c, envp); // execute la commande dans le processus fils
         exit(errno);
     }
-    else 
+    else
 	{
         if (!c->bg) 
 		{
-			while(1) {
+        	while(1) {
 				status = INT_MIN;
-				waitpid(-pid, &status, WUNTRACED);
-				if(status != INT_MIN) {
+            	waitpid(-pid, &status, WUNTRACED);
+            	if(status != INT_MIN) {
 					if(WIFSTOPPED(status)) {
 						c -> nb_jobs = (c -> nb_jobs) + 1;
 						c -> all_jobs = (c -> all_jobs) + 1;
-						job new = {.groupe = (c -> all_jobs), .pid = pid, .etat = "Stopped", .ligne = ligne};
-						print_job(new, 2);
-						add_job(c, pid, strdup(ligne), 0);
+						add_job(c, pid, strdup(ligne), "Stopped", 1);
 						break;
 					}
 					else if (WIFEXITED(status)) {
@@ -96,25 +96,28 @@ void process(cmd *c, char ** envp, char *ligne, int *fd)
 						break;
 					}
 					else if(WIFSIGNALED(status)) {
-						c->val_retour = 1;
+                	    c->val_retour = 1;
 						break;
-					}
+					}				
 				}
 			}
 			free(ligne);
 			sigset_t *set = malloc(sizeof(sigset_t));
-			sigemptyset(set);
-			sigaddset(set, SIGTTIN);
-			sigaddset(set, SIGTTOU);
-			sigprocmask(SIG_BLOCK, set, NULL);
-			tcsetpgrp(0, getpid());
-			tcsetpgrp(1, getpid());
-			tcsetpgrp(2, getpid());
-			sigprocmask(SIG_UNBLOCK, set, NULL);
-			free(set);
+            sigemptyset(set);
+         	sigaddset(set, SIGTTIN);
+            sigaddset(set, SIGTTOU);
+           	sigprocmask(SIG_BLOCK, set, NULL);
+           	tcsetpgrp(0, getpid());
+           	tcsetpgrp(1, getpid());
+            tcsetpgrp(2, getpid());
+          	sigprocmask(SIG_UNBLOCK, set, NULL);
+           	free(set);
         }
         else {
-		add_job(c, pid, ligne, 1);
+			if(c -> next) {
+				add_job(c, pid, ligne, "Running", 0);
+			}
+		else add_job(c, pid, ligne, "Running", 1);
 		}
 	}
 }
