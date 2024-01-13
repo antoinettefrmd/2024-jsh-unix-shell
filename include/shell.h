@@ -36,6 +36,7 @@ typedef struct cmd {
     int fd_out;
     int fd_err;
     struct cmd *next;
+	struct cmd *origin;
     int nb_c;
 } cmd; 
 

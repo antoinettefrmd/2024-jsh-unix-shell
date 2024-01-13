@@ -14,6 +14,7 @@ int main(int argc, char const *argv[], char **envp)
 	c -> all_jobs = 0;
 	c -> jobs = NULL;
 	c -> val_retour = 0;
+	c -> origin = c;
 
 	int in = dup(0); //sauvergarde des redirections
 	int out = dup(1);
