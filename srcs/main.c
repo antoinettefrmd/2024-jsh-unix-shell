@@ -14,10 +14,6 @@ int main(int argc, char const *argv[], char **envp)
 	c -> all_jobs = 0;
 	c -> jobs = NULL;
 	c -> val_retour = 0;
-
-	int in = dup(0); //sauvergarde des redirections
-	int out = dup(1);
-	int err = dup(2);
 	
 	char buf[PATH_MAX];
 	getcwd(buf, sizeof(buf)); // Stocke le chemin du dépot
@@ -26,6 +22,9 @@ int main(int argc, char const *argv[], char **envp)
 	c ->str_opts = NULL;
 	while(1) {
 		ignore_signals();
+		e_in = dup(0); //sauvergarde des redirections
+		s_out = dup(1);
+		s_err = dup(2);
 		c -> fd_in = 0;
 		c -> fd_out = 1;
 		c -> fd_err = 2;
@@ -36,16 +35,16 @@ int main(int argc, char const *argv[], char **envp)
 			return 0;
 		}
 		execloop(c, ligne, envp);
-		dup2(in, STDIN_FILENO); // Remets l'entrée standard potentiellement redirigée sur la vraie entrée standard
-		dup2(out, STDOUT_FILENO); // Remets la sortie standard potentiellement redirigée sur la vraie sortie standard
-		dup2(err, STDERR_FILENO); // Remets la sortie erreur potentiellement redirigée sur la vraie erreur standard
-		close(in);
-		close(out);
-		close(err);
+		dup2(e_in, STDIN_FILENO); // Remets l'entrée standard potentiellement redirigée sur la vraie entrée standard
+		dup2(s_out, STDOUT_FILENO); // Remets la sortie standard potentiellement redirigée sur la vraie sortie standard
+		dup2(s_err, STDERR_FILENO); // Remets la sortie erreur potentiellement redirigée sur la vraie erreur standard
+		close(e_in);
+		close(s_out);
+		close(s_err);
 		ligne = prompt(c);
 	}
-	close(in);
-	close(out);
-	close(err);
+	close(e_in);
+	close(s_out);
+	close(s_err);
 	return 0;
 }

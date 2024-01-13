@@ -163,7 +163,7 @@ void exit_maison (cmd *c)
 {
    for (int i = 0; i < c -> all_jobs; i++) 
    {
-        if(strcmp("Stopped", c -> jobs[i].etat) == 0 || strcmp("Running", c -> jobs[i].etat) == 0) 
+        if(strcmp("Stopped", c -> jobs[i].etat[0]) == 0 || strcmp("Running", c -> jobs[i].etat[0]) == 0) 
         {
             write(2, "Attention : certains jobs sont toujours en cours d'exécution.\n", 64);
             c -> val_retour = 1;
@@ -179,6 +179,9 @@ void exit_maison (cmd *c)
         }
         free_cmd(c, 1); //free la le tableau d'arg ET la strucuture commande
     } 
+    close(e_in);
+    close(s_out);
+    close(s_err);
     exit(tmp);
 }
 
@@ -192,30 +195,30 @@ void jobs (cmd *c) {
 	int job = 0;
 	if(tree == 1 && c -> str_opts[2] != NULL) {
 		int j = 1;
-                char *groupe = malloc(strlen(c -> str_opts[2]));
-                while(c -> str_opts[2][j] != '\0') {
-                        groupe[j - 1] = c -> str_opts[2][j];
-                        j++;
-                }
-                groupe[j - 1] = '\0';
+            char *groupe = malloc(strlen(c -> str_opts[2]));
+            while(c -> str_opts[2][j] != '\0') {
+                groupe[j - 1] = c -> str_opts[2][j];
+                j++;
+            }
+        groupe[j - 1] = '\0';
 		job = atoi(groupe);
 		free(groupe);
 	}
 	else if(tree == 0 && c -> str_opts[1] != NULL) {
-                int j = 1;
-                char *groupe = malloc(strlen(c -> str_opts[1]));
-                while(c -> str_opts[1][j] != '\0') {
-                        groupe[j - 1] = c -> str_opts[1][j];
-                        j++;
-                }
-                groupe[j - 1] = '\0';
-                job = atoi(groupe);
-                free(groupe);
+        int j = 1;
+        char *groupe = malloc(strlen(c -> str_opts[1]));
+        while(c -> str_opts[1][j] != '\0') {
+            groupe[j - 1] = c -> str_opts[1][j];
+			j++;
         }
+        groupe[j - 1] = '\0';
+        job = atoi(groupe);
+        free(groupe);
+    }
 
 	check_jobs(c, 1);
 	for(int i = 0; i < c -> all_jobs; i++) {
-        	if ((job == 0 || c -> jobs[i].groupe == job) && (strcmp("Running", c->jobs[i].etat ) == 0 || strcmp("Stopped", c->jobs[i].etat ) == 0))
+        if ((job == 0 || c -> jobs[i].groupe == job) && (strcmp("Running", c->jobs[i].etat[0]) == 0 || strcmp("Stopped", c->jobs[i].etat[0]) == 0))
 		    print_job(c -> jobs[i], 1);
 	}
 	c -> val_retour = 0;
@@ -231,7 +234,7 @@ void kill_maison(cmd *c) {
 	}
 	else job = c -> str_opts[1];
 	for(int i = 0; i < c -> all_jobs; i++) {
-		if(strcmp("Running", c -> jobs[i].etat) == 0 || strcmp("Stopped", c -> jobs[i].etat) == 0) {
+		if(strcmp("Running", c -> jobs[i].etat[0]) == 0 || strcmp("Stopped", c -> jobs[i].etat[0]) == 0) {
 			if(job[0] == '%') {
 				int j = 1;
 				char *groupe = malloc(strlen(job));
@@ -241,15 +244,15 @@ void kill_maison(cmd *c) {
 				}
 				groupe[j - 1] = '\0';
 				if(c -> jobs[i].groupe == atoi(groupe)) {
-					kill(-(c -> jobs[i].pid), sig);
+					kill(-(c -> jobs[i].pid[0]), sig);
 					free(groupe);
 					break;
 				}
 				free(groupe);
 			}
 			else {
-				if(c -> jobs[i].pid == atoi(job)) {
-					kill(c -> jobs[i].pid, sig);
+				if(c -> jobs[i].pid[0] == atoi(job)) {
+					kill(c -> jobs[i].pid[0], sig);
 					break;
 				}
 			}
@@ -275,30 +278,30 @@ void fg(cmd *c) {
 	c -> val_retour = 0;
 	for(i = 0; i < c -> all_jobs; i++) {
 		if(c -> jobs[i].groupe == atoi(groupe)) {
-			kill(-(c -> jobs[i].pid), SIGCONT);
-			c -> jobs[i].etat = "Running";
+			kill(-(c -> jobs[i].pid[0]), SIGCONT);
+			c -> jobs[i].etat[0] = "Running";
 			int status;
 			while(1) {
-                                int res = waitpid(c -> jobs[i].pid, &status, WUNTRACED | WNOHANG);
-                                if(res != 0) {
-                                        if(WIFSTOPPED(status)) {
-                                                c -> jobs[i].etat = "Stopped";
-                                                print_job(c -> jobs[i], 2);
-                                                break;
-                                        }
-                                        else if (WIFEXITED(status)) {
-						c -> jobs[i].etat = "Done";
-                                                c -> val_retour = WEXITSTATUS(status);
+                int res = waitpid(c -> jobs[i].pid[0], &status, WUNTRACED | WNOHANG);
+				if(res != 0) {
+                    if(WIFSTOPPED(status)) {
+                        c -> jobs[i].etat[0] = "Stopped";
+                        print_job(c -> jobs[i], 2);
+                        break;
+                    }
+                    else if (WIFEXITED(status)) {
+						c -> jobs[i].etat[0] = "Done";
+                        c -> val_retour = WEXITSTATUS(status);
 						c -> nb_jobs--;
-                                                break;
-                                        }
-                                        else if(WIFSIGNALED(status)) {
-						c -> jobs[i].etat = "Killed";
+                        break;
+                    }
+                    else if(WIFSIGNALED(status)) {
+						c -> jobs[i].etat[0] = "Killed";
 						c -> nb_jobs--;
 						break;
 					}
-                                }
-                        }
+                }
+            }
 			break;
 		}
 	}
@@ -321,8 +324,8 @@ void bg(cmd *c) {
         groupe[i - 1] = '\0';
         for(i = 0; i < c -> all_jobs; i++) {
                 if(c -> jobs[i].groupe == atoi(groupe)) {
-                        kill(-(c -> jobs[i].pid), SIGCONT);
-                        c -> jobs[i].etat = "Running";
+                        kill(-(c -> jobs[i].pid[0]), SIGCONT);
+                        c -> jobs[i].etat[0] = "Running";
                         break;
                 }
         }
