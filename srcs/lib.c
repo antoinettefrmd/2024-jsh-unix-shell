@@ -130,7 +130,7 @@ void free_jobs(cmd *c) {
 		for(int i = 0; i < c -> all_jobs; i++) {
 			free(jobs[i].pid);
 			free(jobs[i].etat);
-			for(int j = 0; j < jobs[i].nb_process; j++) {
+			for(int j = 0; j < jobs[i].nb_process + 1; j++) {
 				free(jobs[i].ligne[j]);
 			}
 			free(jobs[i].ligne);

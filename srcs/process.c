@@ -1,7 +1,7 @@
 #include "shell.h"
 
 void add_process(cmd *c, pid_t pid, char *ligne, int print) {
-	job j;
+	job j = (c -> jobs)[0];
 	int groupe = c -> all_jobs;
 	for(int i = 0; i < c -> all_jobs; i++) {
 		if((c -> jobs)[i].groupe == groupe) {
@@ -16,7 +16,7 @@ void add_process(cmd *c, pid_t pid, char *ligne, int print) {
 	}
 
 	for(int i = 1; i < j.nb_process + 1; i++) {
-		if(j.etat[i] == NULL) {
+		if(j.pid[i] == 0) {
 			j.pid[i] = pid;
 			j.etat[i] = "Running";
 			j.ligne[i] = ligne;
@@ -35,6 +35,9 @@ void add_job(cmd *c, job new) {
 			newJobs[i] = (c -> jobs)[i];
 		}
 		free(c -> jobs);
+	}
+	for(int i = 0; i < new.nb_process + 1; i++) {
+		new.pid[i] = 0;
 	}
     newJobs[nb - 1] = new;
 	c -> jobs = newJobs;
@@ -105,30 +108,28 @@ void process(cmd *c, char ** envp, char *ligne, int *fd)
     }
     else
 	{
+		char *s = malloc(2);
+        s[0] = 'a';
+        s[1] = '\0';
         if (!c->bg) 
 		{
-			add_process(c -> origin, pid, ligne, 0);
-        	while(1) {
-				status = INT_MIN;
-            	waitpid(-pid, &status, WUNTRACED);
-            	if(status != INT_MIN) {
-					if(WIFSTOPPED(status)) {
-						new.etat[0] = "Stopped";
-						print_job(new, 2);
-						c -> nb_jobs = (c -> nb_jobs) + 1;
-						break;
-					}
-					else if (WIFEXITED(status)) {
-						new.etat[0] = "Done";
-						c->val_retour = WEXITSTATUS(status); // récupère le statut du fils et le stocke dans val_retour
-						break;
-					}
-					else if(WIFSIGNALED(status)) {
-						new.etat[0] = "Killed";
-                	    c->val_retour = 1;
-						break;
-					}				
+			add_process(c -> origin, pid, s, 0);
+			status = INT_MIN;
+        	waitpid(pid, &status, WUNTRACED);
+            if(status != INT_MIN) {
+				if(WIFSTOPPED(status)) {
+					new.etat[0] = "Stopped";
+					print_job(new, 2);
+					c -> nb_jobs = (c -> nb_jobs) + 1;
 				}
+				else if (WIFEXITED(status)) {
+					new.etat[0] = "Done";
+					c->val_retour = WEXITSTATUS(status); // récupère le statut du fils et le stocke dans val_retour
+				}
+				else if(WIFSIGNALED(status)) {
+					new.etat[0] = "Killed";
+            	    c->val_retour = 1;
+				}				
 			}
 			sigset_t *set = malloc(sizeof(sigset_t));
             sigemptyset(set);
@@ -141,6 +142,6 @@ void process(cmd *c, char ** envp, char *ligne, int *fd)
           	sigprocmask(SIG_UNBLOCK, set, NULL);
            	free(set);
 		}
-		else add_process(c -> origin, pid, ligne, 1);
+		else add_process(c -> origin, pid, s, 1);
 	}
 }
