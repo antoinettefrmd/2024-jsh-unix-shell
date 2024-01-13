@@ -19,22 +19,27 @@ void add_job(cmd *c, pid_t pid, char *ligne, char *etat, int print) {
 	c -> jobs = newJobs;
 }
 
-void	child_process(cmd *c, int *fd, char **envp)
+void	child_process(cmd *c, int **fd, int i, char **envp)
 {
-	dup2(fd[1], STDOUT_FILENO);
-	close(fd[0]);
+	if (i) {
+		dup2(fd[i - 1][0], STDIN_FILENO);
+	}
+	if (c->next) {
+		dup2(fd[i][1], STDOUT_FILENO);
+	}
+	close_pipes(fd);
 	execute(c, envp);
 }
-
-void	parent_process(cmd *c, int *fd, char **envp)
+/*
+void	parent_process(cmd *c, int **fd, int i, char **envp)
 {
 	dup2(fd[0], STDIN_FILENO);
 	close(fd[1]);
 	execute(c, envp);
 }
-
+*/
 // créé un processus fils pour executer une commande externe
-void process(cmd *c, char ** envp, char *ligne, int *fd)
+void process(cmd *c, char ** envp, char *ligne, int **fd, int i)
 {
     pid_t   pid;
     int     status;
@@ -43,11 +48,6 @@ void process(cmd *c, char ** envp, char *ligne, int *fd)
 	    c -> nb_jobs = (c -> nb_jobs) + 1;
 	    c -> all_jobs = (c -> all_jobs) + 1;
     }
-
-	if (c->next)
-	{
-		pipe(fd);
-	}
 	
     pid = fork();
     if (pid == -1)
@@ -67,10 +67,8 @@ void process(cmd *c, char ** envp, char *ligne, int *fd)
 			sigprocmask(SIG_UNBLOCK, set, NULL);
 			free(set);
 		}
-		if (c->next)
-			child_process(c, fd, envp);
-		else if (is_pipe(ligne))
-			parent_process(c, fd, envp);
+		if (c->next || is_pipe(ligne))
+			child_process(c, fd, i, envp);
 		int indice_redir = parse_redir(c);
 		if (indice_redir == -1) exit(1);
 		petit_tab(indice_redir, c);

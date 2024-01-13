@@ -16,9 +16,9 @@
 # include <signal.h>
 #include <bsd/bsd.h>
 
-int e_in;
-int s_out;
-int s_err;
+extern int e_in;
+extern int s_out;
+extern int s_err;
 
 typedef struct job {
 	pid_t groupe;
@@ -58,7 +58,7 @@ int     nb_cmd(cmd *c);
 //exec functions
 void	execloop(cmd *commande, char *ligne, char **envp);
 void	execute(cmd *c, char **envp);
-void    process(cmd *c, char ** envp, char *ligne, int *fd);
+void    process(cmd *c, char ** envp, char *ligne, int **fd, int);
 void	error(void);
 
 // string utils functions
@@ -66,6 +66,8 @@ void	error(void);
 char	*strjoin(char const *s1, char const *s2);
 char	**split(char const *s, char c);
 void    free_cmd(cmd *c, int free_all);
+void    free_pipes(int **fd);
+void    close_pipes(int **fd);
 char    *last_cmd(char **cmd);
 int	    tablen(char **cmd);
 void    petit_tab(int i, cmd *c);   
@@ -76,6 +78,7 @@ void	print_cmd(cmd *c);
 // int utils functions
 
 int nb_digits(int n);
+int	fd_len(int **fd);
 
 // builtins fonctions
 

@@ -165,6 +165,31 @@ void free_cmd(cmd *c, int free_all) {
 	}
 }
 
+void free_pipes(int **fd) {
+	int i = 0;
+	while (fd[i]) {
+		free(fd[i]);
+		i++;
+	}
+	free(fd);
+}
+
+void close_pipes(int **fd) {
+	int i = 0;
+	while (fd[i]) {
+		close(fd[i][0]);
+		close(fd[i][1]);
+		i++;
+	}
+}
+
+int	fd_len(int **fd) {
+	int i = 0;
+	while (fd[i])
+		i++;
+	return i;
+}
+
 int	tablen(char **cmd)
 {
 	int	i;

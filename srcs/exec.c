@@ -80,7 +80,15 @@ void	execloop(cmd *commande, char *ligne, char **envp)
 
 	c = parsing_pipe(ligne, commande); // répartit la commande dans le tableau pour separer les arguments
 	c -> nb_c = nb_cmd(c);
-	int fd[c->nb_c > 1 ? 1 : c->nb_c - 1][2];
+	int **fd = NULL;
+	if (c->nb_c > 1) {
+		fd = malloc((c->nb_c) * sizeof(int *));
+		for (int j = 0; j < c->nb_c - 1; j++) {
+			fd[j] = malloc(2 * sizeof(int));
+			pipe(fd[j]);
+		}
+		fd[c->nb_c - 1] = NULL;
+	}
 	while (c)
 	{
 		//print_cmd(c);
@@ -94,9 +102,9 @@ void	execloop(cmd *commande, char *ligne, char **envp)
 			if(c->str_opts[0] != NULL) {
 				if(!is_builtins(c)) {
 					if (c -> bg) {
-						process(c, envp, strndup(ligne, strlen(ligne) - 2), fd[i]); // on considère alors que c'est une commande externe
+						process(c, envp, strndup(ligne, strlen(ligne) - 2), fd, i); // on considère alors que c'est une commande externe
 					}
-					else process(c, envp, strdup(ligne),fd[i]);
+					else process(c, envp, strdup(ligne),fd, i);
 				}
 				else builtins(c);
 			}
@@ -104,10 +112,17 @@ void	execloop(cmd *commande, char *ligne, char **envp)
 		free_cmd(c, 0); // free seulement le tableau des commandes et options
 		check_jobs(c, 2);
 		c = c->next;
-		if (c && c->next == NULL)
-			close(fd[i][1]);
-		else if (is_pipe(ligne))
-			close(fd[i][0]);
+		if (is_pipe(ligne)) {
+			if (i%2)
+				close(fd[i / 2][0]);
+			else
+				close(fd[i / 2][1]);
+		}
+		i++;
 	}
+	if (is_pipe(ligne))
+		close_pipes(fd);
+	if (fd)
+		free_pipes(fd);
 	free(ligne);
 }
