@@ -23,6 +23,7 @@ cmd    *parsing_pipe(char *str, cmd *commande)
             commande -> next -> fd_err = 2;
             commande -> next -> bg = bg;
             commande -> next -> nb_c = commande -> nb_c;
+			commande -> next -> origin = commande -> origin;
             commande = commande->next;
         }
     }

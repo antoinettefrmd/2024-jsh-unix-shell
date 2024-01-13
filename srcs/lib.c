@@ -130,7 +130,7 @@ void free_jobs(cmd *c) {
 		for(int i = 0; i < c -> all_jobs; i++) {
 			free(jobs[i].pid);
 			free(jobs[i].etat);
-			for(int j = 0; j < jobs[i].nb_process; j++) {
+			for(int j = 0; j < jobs[i].nb_process + 1; j++) {
 				free(jobs[i].ligne[j]);
 			}
 			free(jobs[i].ligne);
@@ -232,4 +232,17 @@ void    print_cmd(cmd *c) {
         i++;
     }
     printf("\n");
+}
+
+void give_fg(pid_t pid) {
+	sigset_t *set = malloc(sizeof(sigset_t));
+    sigemptyset(set);
+    sigaddset(set, SIGTTIN);
+    sigaddset(set, SIGTTOU);
+    sigprocmask(SIG_BLOCK, set, NULL);
+    tcsetpgrp(0, pid);
+    tcsetpgrp(1, pid);
+    tcsetpgrp(2, pid);
+    sigprocmask(SIG_UNBLOCK, set, NULL);
+    free(set);
 }

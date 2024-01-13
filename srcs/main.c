@@ -18,6 +18,7 @@ int main(int argc, char const *argv[], char **envp)
 	c -> all_jobs = 0;
 	c -> jobs = NULL;
 	c -> val_retour = 0;
+	c -> origin = c;
 	
 	char buf[PATH_MAX];
 	getcwd(buf, sizeof(buf)); // Stocke le chemin du dépot
@@ -45,6 +46,7 @@ int main(int argc, char const *argv[], char **envp)
 		close(e_in);
 		close(s_out);
 		close(s_err);
+		check_jobs(c, 2);
 		ligne = prompt(c);
 	}
 	close(e_in);

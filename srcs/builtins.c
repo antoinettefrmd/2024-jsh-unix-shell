@@ -218,8 +218,9 @@ void jobs (cmd *c) {
 
 	check_jobs(c, 1);
 	for(int i = 0; i < c -> all_jobs; i++) {
-        if ((job == 0 || c -> jobs[i].groupe == job) && (strcmp("Running", c->jobs[i].etat[0]) == 0 || strcmp("Stopped", c->jobs[i].etat[0]) == 0))
-		    print_job(c -> jobs[i], 1);
+        if ((job == 0 || c -> jobs[i].groupe == job) && (strcmp("Running", c->jobs[i].etat[0]) == 0 || strcmp("Stopped", c->jobs[i].etat[0]) == 0)) {
+			print_job(c -> jobs[i], 1, tree);
+		}
 	}
 	c -> val_retour = 0;
 }
@@ -278,15 +279,16 @@ void fg(cmd *c) {
 	c -> val_retour = 0;
 	for(i = 0; i < c -> all_jobs; i++) {
 		if(c -> jobs[i].groupe == atoi(groupe)) {
+			give_fg(c -> jobs[i].pid[0]);
 			kill(-(c -> jobs[i].pid[0]), SIGCONT);
 			c -> jobs[i].etat[0] = "Running";
 			int status;
 			while(1) {
-                int res = waitpid(c -> jobs[i].pid[0], &status, WUNTRACED | WNOHANG);
+                int res = waitpid(-(c -> jobs[i].pid[0]), &status, WUNTRACED | WNOHANG);
 				if(res != 0) {
                     if(WIFSTOPPED(status)) {
                         c -> jobs[i].etat[0] = "Stopped";
-                        print_job(c -> jobs[i], 2);
+                        print_job(c -> jobs[i], 2, 0);
                         break;
                     }
                     else if (WIFEXITED(status)) {
@@ -302,6 +304,7 @@ void fg(cmd *c) {
 					}
                 }
             }
+			give_fg(getpid());
 			break;
 		}
 	}
