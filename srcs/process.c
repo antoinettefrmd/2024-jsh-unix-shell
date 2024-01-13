@@ -16,7 +16,7 @@ void add_process(cmd *c, pid_t pid, char *ligne, int print) {
 	}
 
 	for(int i = 1; i < j.nb_process + 1; i++) {
-		if((j.pid + i) == NULL) {
+		if(j.etat[i] == NULL) {
 			j.pid[i] = pid;
 			j.etat[i] = "Running";
 			j.ligne[i] = ligne;
