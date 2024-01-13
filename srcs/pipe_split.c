@@ -38,3 +38,15 @@ char **pipe_split(char *str) {
     tab[size] = '\0';
     return tab;
 }
+
+char *pipe_get(char *str, int i) {
+	char **tab = pipe_split(str);
+	char *res;
+	if(i == 0) res = strdup(tab[i]);
+	else res = strdup(tab[i] + 1);
+	for(int j = 0; j < pipecount(str) + 1; j++) {
+		free(tab[j]);
+	}
+	free(tab);
+	return res;
+}

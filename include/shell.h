@@ -54,6 +54,7 @@ int     parse_redir(cmd *c);
 int     redir_fic(cmd *c);
 char    **pipe_split(char *str);
 cmd     *parsing_pipe(char *str, cmd *commande);
+char	*pipe_get(char *str, int i);
 int     nb_cmd(cmd *c);
 
 //exec functions
@@ -62,7 +63,7 @@ void	execute(cmd *c, char **envp);
 void    process(cmd *c, char ** envp, char *ligne, int *fd);
 void	error(void);
 
-// string utils functions
+// utils functions
 
 char	*strjoin(char const *s1, char const *s2);
 char	**split(char const *s, char c);
@@ -73,10 +74,8 @@ void    petit_tab(int i, cmd *c);
 int	    is_pipe(char *str);  
 void    error_open(); 
 void	print_cmd(cmd *c);  
-
-// int utils functions
-
-int nb_digits(int n);
+int 	nb_digits(int n);
+void	give_fg(pid_t pid);
 
 // builtins fonctions
 
@@ -97,7 +96,7 @@ char * prompt(cmd *c);
 
 // jobs fonctions
 
-void print_job(job j, int sortie);
+void print_job(job j, int sortie, int tree);
 void check_jobs(cmd *c, int sortie);
 
 #endif

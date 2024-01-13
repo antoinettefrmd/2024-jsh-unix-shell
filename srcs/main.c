@@ -46,6 +46,7 @@ int main(int argc, char const *argv[], char **envp)
 		close(e_in);
 		close(s_out);
 		close(s_err);
+		check_jobs(c, 2);
 		ligne = prompt(c);
 	}
 	close(e_in);

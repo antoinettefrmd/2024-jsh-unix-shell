@@ -12,14 +12,14 @@ void add_process(cmd *c, pid_t pid, char *ligne, int print) {
 
 	if(j.pid[0] == 0) {
 		j.pid[0] = pid;
-		if(print) print_job(j, 2);
+		if(print) print_job(j, 2, 0);
 	}
 
 	for(int i = 1; i < j.nb_process + 1; i++) {
 		if(j.pid[i] == 0) {
 			j.pid[i] = pid;
 			j.etat[i] = "Running";
-			j.ligne[i] = ligne;
+			j.ligne[i] = pipe_get(ligne, i - 1);
 			break;
 		}
 	}
@@ -84,18 +84,6 @@ void process(cmd *c, char ** envp, char *ligne, int *fd)
         error();
     else if (pid == 0) {
 		cmprtment_par_defaut();
-		if(!c->bg) {
-			sigset_t *set = malloc(sizeof(sigset_t));
-			sigemptyset(set);
-			sigaddset(set, SIGTTIN);
-			sigaddset(set, SIGTTOU);
-			sigprocmask(SIG_BLOCK, set, NULL);
-			tcsetpgrp(0, getpid());
-			tcsetpgrp(1, getpid());
-			tcsetpgrp(2, getpid());
-			sigprocmask(SIG_UNBLOCK, set, NULL);
-			free(set);
-		}
 		if (c->next)
 			child_process(c, fd, envp);
 		else if (is_pipe(ligne))
@@ -108,18 +96,16 @@ void process(cmd *c, char ** envp, char *ligne, int *fd)
     }
     else
 	{
-		char *s = malloc(2);
-        s[0] = 'a';
-        s[1] = '\0';
         if (!c->bg) 
 		{
-			add_process(c -> origin, pid, s, 0);
+			add_process(c -> origin, pid, ligne, 0);
+			give_fg(getpgid(pid));
 			status = INT_MIN;
         	waitpid(pid, &status, WUNTRACED);
             if(status != INT_MIN) {
 				if(WIFSTOPPED(status)) {
 					new.etat[0] = "Stopped";
-					print_job(new, 2);
+					print_job(new, 2, 0);
 					c -> nb_jobs = (c -> nb_jobs) + 1;
 				}
 				else if (WIFEXITED(status)) {
@@ -131,17 +117,8 @@ void process(cmd *c, char ** envp, char *ligne, int *fd)
             	    c->val_retour = 1;
 				}				
 			}
-			sigset_t *set = malloc(sizeof(sigset_t));
-            sigemptyset(set);
-         	sigaddset(set, SIGTTIN);
-            sigaddset(set, SIGTTOU);
-           	sigprocmask(SIG_BLOCK, set, NULL);
-           	tcsetpgrp(0, getpid());
-           	tcsetpgrp(1, getpid());
-            tcsetpgrp(2, getpid());
-          	sigprocmask(SIG_UNBLOCK, set, NULL);
-           	free(set);
+			give_fg(getpid());
 		}
-		else add_process(c -> origin, pid, s, 1);
+		else add_process(c -> origin, pid, ligne, 1);
 	}
 }

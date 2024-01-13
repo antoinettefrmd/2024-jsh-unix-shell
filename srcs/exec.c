@@ -104,7 +104,6 @@ void	execloop(cmd *commande, char *ligne, char **envp)
 			}
 		}
 		free_cmd(c, 0); // free seulement le tableau des commandes et options
-		check_jobs(c, 2);
 		c = c->next;
 		if (c && c->next == NULL)
 			close(fd[1]);
