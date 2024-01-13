@@ -3,9 +3,9 @@
 cmd    *parsing_pipe(char *str, cmd *commande)
 {
 
+	int bg = strlen(str) != 0 && str[strlen(str) - 1] == '&';
     char    **pipes = split(str, '|');
     cmd *tmp = commande;
-    int bg = str[strlen(str) - 1] == '&';
     commande->bg = bg;
     for (int i = 0; i < tablen(pipes) + 1; i++) {
 

@@ -18,9 +18,10 @@
 
 typedef struct job {
 	pid_t groupe;
-	pid_t pid;
-	char *etat;
-	char *ligne;
+	pid_t *pid;
+	char **etat;
+	char **ligne;
+	int nb_process;
 } job;
 
 typedef struct cmd {
