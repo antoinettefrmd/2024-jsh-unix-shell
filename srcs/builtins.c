@@ -1,7 +1,6 @@
 #include "shell.h"
 
 // verifie si l'argument est une commande interne
-
 int is_builtins(cmd *c) 
 {
     return ((strcmp("cd", c->str_opts[0]) == 0) 
@@ -14,6 +13,7 @@ int is_builtins(cmd *c)
     || (strcmp("bg", c->str_opts[0]) == 0));
 }
 
+// appelle le buitins correspondant à la commande passée en argument
 int builtins(cmd *c) 
 {
     int indice_redir = parse_redir(c);
@@ -35,7 +35,7 @@ int builtins(cmd *c)
         }
         else if(strcmp("-", c->str_opts[1]) == 0) 
         {
-            c->val_retour = cd(c->chem_jsh); // Nous ramène à la racine du dépot
+            c->val_retour = cd(c->chem_jsh); // Nous ramène au chemin précédent
         }
         else 
         {
@@ -79,8 +79,8 @@ int builtins(cmd *c)
     }
     if (strcmp("bg", c->str_opts[0]) == 0)
     {
-            bg(c);
-            return 1;
+        bg(c);
+        return 1;
     }
     return 0; 
 }
@@ -185,6 +185,7 @@ void exit_maison (cmd *c)
     exit(tmp);
 }
 
+// Gère l'execution de la fonction interne de job
 void jobs (cmd *c) {
 	int tree;
 	if(c -> str_opts[1] != NULL && strcmp(c -> str_opts[1], "-t") == 0) {
@@ -225,6 +226,7 @@ void jobs (cmd *c) {
 	c -> val_retour = 0;
 }
 
+// Gère l'execution de la fonction interne kill
 void kill_maison(cmd *c) {
 	char *tmp = c -> str_opts[1];
 	char *job;
@@ -262,6 +264,7 @@ void kill_maison(cmd *c) {
 	c -> val_retour = 0;
 }
 
+// Mise à l'avant plan d'une commande
 void fg(cmd *c) {
 	if(c -> str_opts[1] == NULL) {
 		c -> val_retour = 1;
@@ -311,6 +314,7 @@ void fg(cmd *c) {
 	free(groupe);
 }
 
+//mise à l'arrière plan d'un commande
 void bg(cmd *c) {
         if(c -> str_opts[1] == NULL) {
                 c -> val_retour = 1;

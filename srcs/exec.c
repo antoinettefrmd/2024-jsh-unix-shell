@@ -82,7 +82,7 @@ void	execloop(cmd *commande, char *ligne, char **envp)
 
 	c = parsing_pipe(ligne, commande); // répartit la commande dans le tableau pour separer les arguments
 	origin = c;
-	c -> nb_c = nb_cmd(c);
+	c -> nb_c = nb_cmd(c); //calcule le nombre de sous-commande à executer
 	int **fd = NULL;
 	if (c->nb_c > 1) {
 		fd = malloc((c->nb_c) * sizeof(int *));
@@ -92,9 +92,8 @@ void	execloop(cmd *commande, char *ligne, char **envp)
 		}
 		fd[c->nb_c - 1] = NULL;
 	}
-	while (c)
+	while (c) // execute les nb_c commandes
 	{
-		//print_cmd(c);
 		if(strcmp(ligne, "") != 0) {
 			if (!strcmp(last_cmd(c->str_opts), "&"))
 			{
@@ -104,13 +103,12 @@ void	execloop(cmd *commande, char *ligne, char **envp)
 			add_history(ligne);
 			if(c->str_opts[0] != NULL) {
 				if(!is_builtins(c) || is_pipe(ligne)) {
-					if (c -> bg) {
-						process(c, envp, strndup(ligne, strlen(ligne) - 2), fd, i); // on considère alors que c'est une commande externe
+					if (c -> bg) { // on considère alors que c'est une commande externe
+						process(c, envp, strndup(ligne, strlen(ligne) - 2), fd, i);
 					}
 					else process(c, envp, strdup(ligne),fd, i);
 				}
-		
-				else builtins(c);
+				else builtins(c); 
 			}
 		}
 		if (is_pipe(ligne)) {

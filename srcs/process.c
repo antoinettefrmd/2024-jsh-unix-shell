@@ -59,15 +59,7 @@ void	child_process(cmd *c, int **fd, int i, char **envp)
 		exit(errno);
 	}
 }
-/*
-void	parent_process(cmd *c, int **fd, int i, char **envp)
-{
-	dup2(fd[0], STDIN_FILENO);
-	close(fd[1]);
-	execute(c, envp);
-}
-*/
-// créé un processus fils pour executer une commande externe
+
 void process(cmd *c, char ** envp, char *ligne, int **fd, int i)
 {
     pid_t   pid;

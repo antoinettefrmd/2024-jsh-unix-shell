@@ -16,18 +16,21 @@
 # include <signal.h>
 #include <bsd/bsd.h>
 
-extern int e_in;
-extern int s_out;
-extern int s_err;
+// sauvegarde des entree/sorties standards/erreur
+extern int      e_in;
+extern int      s_out;
+extern int      s_err;
 
+//structure job expliquee dans le .md
 typedef struct job {
-	pid_t groupe;
+	int groupe;
 	pid_t *pid;
 	char **etat;
 	char **ligne;
 	int nb_process;
 } job;
 
+//structure job expliquee dans le .md
 typedef struct cmd {
     int val_retour;
     char **str_opts;
@@ -46,8 +49,10 @@ typedef struct cmd {
 
 // signaux functions
 
-void ignore_signals();
-void cmprtment_par_defaut();
+void    ignore_signals();
+void    cmprtment_par_defaut();
+void	give_fg(pid_t pid);
+
 
 //parsing_redir
 int     parse_redir(cmd *c);
@@ -76,33 +81,29 @@ void    petit_tab(int i, cmd *c);
 int	    is_pipe(char *str);  
 void    error_open(); 
 void	print_cmd(cmd *c);  
-
-// int utils functions
-
 int	    fd_len(int **fd);
 int 	nb_digits(int n);
-void	give_fg(pid_t pid);
 
 // builtins fonctions
 
-int is_builtins(cmd *c);
-int builtins(cmd *c);
-int pwd ();
-void print_val_ret(int val) ;
-int cd(char *ref);
-void exit_maison (cmd *c);
-void jobs (cmd *c);
-void kill_maison(cmd *c);
-void fg(cmd *c);
-void bg(cmd *c);
+int     is_builtins(cmd *c);
+int     builtins(cmd *c);
+int     pwd ();
+void    print_val_ret(int val) ;
+int     cd(char *ref);
+void    exit_maison (cmd *c);
+void    jobs (cmd *c);
+void    kill_maison(cmd *c);
+void    fg(cmd *c);
+void    bg(cmd *c);
 
 // prompt fonctions
 
-char * prompt(cmd *c);
+char    *prompt(cmd *c);
 
 // jobs fonctions
 
-void print_job(job j, int sortie, int tree);
-void check_jobs(cmd *c, int sortie);
+void    print_job(job j, int sortie, int tree);
+void    check_jobs(cmd *c, int sortie);
 
 #endif
