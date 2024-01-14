@@ -126,7 +126,7 @@ void	execloop(cmd *commande, char *ligne, char **envp)
 	}
 
 	c = origin;
-	if (ligne && !is_builtins(c)) {
+	if (!strcmp(ligne, "") == 0 && !is_builtins(c)) {
 		job j = c->jobs[c->all_jobs - 1];
 		for (int k = 1; k < j.nb_process + 1; k++) {
 			if (!c->bg) 
@@ -149,10 +149,10 @@ void	execloop(cmd *commande, char *ligne, char **envp)
 					}				
 				}
 			}
-			give_fg(getpid());
 		}
 	}
 	
+	give_fg(getpid());
 	if (fd)
 		free_pipes(fd);
 	free_cmd(c, 0, 0);

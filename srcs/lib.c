@@ -131,7 +131,7 @@ void free_jobs(cmd *c, int free_all) {
 			free(jobs[i].pid);
 			free(jobs[i].etat);
 			if (free_all) {
-				for(int j = 1; j < jobs[i].nb_process + 1; j++) {
+				for(int j = 0; j < jobs[i].nb_process + 1; j++) {
 					free(jobs[i].ligne[j]);
 				}
 			}
