@@ -123,16 +123,20 @@ int redir_fic(cmd *c)
 	return 0;
 }
 
-void free_jobs(cmd *c) {
+void free_jobs(cmd *c, int free_all) {
 	if(c -> jobs != NULL) 
 	{
 		job * jobs = c -> jobs;
 		for(int i = 0; i < c -> all_jobs; i++) {
 			free(jobs[i].pid);
 			free(jobs[i].etat);
-			for(int j = 0; j < jobs[i].nb_process + 1; j++) {
-				free(jobs[i].ligne[j]);
+			if (free_all) {
+				for(int j = 1; j < jobs[i].nb_process + 1; j++) {
+					free(jobs[i].ligne[j]);
+				}
 			}
+			else
+				free(jobs[i].ligne[0]);
 			free(jobs[i].ligne);
 		}
 		free(c -> jobs);
@@ -140,10 +144,12 @@ void free_jobs(cmd *c) {
 }
 
 // free la structure complete si free_all, seulement str_opts sinon
-void free_cmd(cmd *c, int free_all) {
+void free_cmd(cmd *c, int free_all, int free_struct) {
 	int i;
 	cmd *tmp;
+	int j;
 
+	j = 0;
 	while (c)
 	{
 		i = 0;
@@ -153,15 +159,15 @@ void free_cmd(cmd *c, int free_all) {
 			i += 1;
 		}
 		free(c->str_opts);
-		if (free_all) {
-			free_jobs(c);
+		if (free_all && j == 0)
 			free(c->chem_jsh);
-			tmp = c->next;
+		tmp = c->next;
+		if (free_struct || j) {
+			free_jobs(c, free_all);
 			free(c);
-			c = tmp;
 		}
-		else
-			c = NULL;    
+		j++;
+		c = tmp;
 	}
 }
 

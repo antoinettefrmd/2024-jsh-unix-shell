@@ -71,7 +71,6 @@ void	parent_process(cmd *c, int **fd, int i, char **envp)
 void process(cmd *c, char ** envp, char *ligne, int **fd, int i)
 {
     pid_t   pid;
-    int     status;
 	int indice_redir;
 
 	c -> all_jobs = c -> all_jobs + 1;
@@ -102,30 +101,10 @@ void process(cmd *c, char ** envp, char *ligne, int **fd, int i)
 		exit(errno);
 
     }
-    else
-	{
-        if (!c->bg) 
-		{
+	else {
+		if (!c->bg) {
 			add_process(c -> origin, pid, ligne, 0);
 			give_fg(getpgid(pid));
-			status = INT_MIN;
-        	waitpid(pid, &status, WUNTRACED);
-            if(status != INT_MIN) {
-				if(WIFSTOPPED(status)) {
-					new.etat[0] = "Stopped";
-					print_job(new, 2, 0);
-					c -> nb_jobs = (c -> nb_jobs) + 1;
-				}
-				else if (WIFEXITED(status)) {
-					new.etat[0] = "Done";
-					c->val_retour = WEXITSTATUS(status); // récupère le statut du fils et le stocke dans val_retour
-				}
-				else if(WIFSIGNALED(status)) {
-					new.etat[0] = "Killed";
-            	    c->val_retour = 1;
-				}				
-			}
-			give_fg(getpid());
 		}
 		else add_process(c -> origin, pid, ligne, 1);
 	}

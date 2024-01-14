@@ -4,7 +4,7 @@ int pipecount (char *str) {
     int c = 1;
     int i = 0;
     while (str[i]) {
-        if (i && str[i] == '|' && str[i - 1] != '>' && str[i - 1] != '<')
+        if (i && str[i] == '|' && str[i - 1] != '>')
             c++;
         i++;
     }
@@ -15,7 +15,7 @@ int pipelen(char *str) {
     int i = 0;
 
     while (str[i]) {
-        if (i && str[i] == '|' && str[i - 1] != '>' && str[i - 1] != '<')
+        if (i && str[i] == '|' && str[i - 1] != '>')
             break;
         i++;
     }

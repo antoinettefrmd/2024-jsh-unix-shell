@@ -67,7 +67,7 @@ void	error(void);
 
 char	*strjoin(char const *s1, char const *s2);
 char	**split(char const *s, char c);
-void    free_cmd(cmd *c, int free_all);
+void    free_cmd(cmd *c, int free_all, int free_struct);
 void    free_pipes(int **fd);
 void    close_pipes(int **fd);
 char    *last_cmd(char **cmd);

@@ -177,7 +177,7 @@ void exit_maison (cmd *c)
         {
             tmp = atoi(c->str_opts[1]); // si exit prends une valeur de retour en argument, c'est elle qui est renvoyée
         }
-        free_cmd(c, 1); //free la le tableau d'arg ET la strucuture commande
+        free_cmd(c, 1, 1); //free la le tableau d'arg ET la strucuture commande
     } 
     close(e_in);
     close(s_out);

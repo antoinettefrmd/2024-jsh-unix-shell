@@ -77,8 +77,11 @@ void	execloop(cmd *commande, char *ligne, char **envp)
 {
 	cmd *c;
 	int	i = 0;
+	int     status;
+	cmd *origin;
 
 	c = parsing_pipe(ligne, commande); // répartit la commande dans le tableau pour separer les arguments
+	origin = c;
 	c -> nb_c = nb_cmd(c);
 	int **fd = NULL;
 	if (c->nb_c > 1) {
@@ -106,10 +109,10 @@ void	execloop(cmd *commande, char *ligne, char **envp)
 					}
 					else process(c, envp, strdup(ligne),fd, i);
 				}
+		
 				else builtins(c);
 			}
 		}
-		free_cmd(c, 0); // free seulement le tableau des commandes et options
 		if (is_pipe(ligne)) {
 			if (c->next != NULL) {
 				close(fd[i][1]);
@@ -121,7 +124,37 @@ void	execloop(cmd *commande, char *ligne, char **envp)
 		c = c->next;
 		i++;
 	}
+
+	c = origin;
+	if (ligne && !is_builtins(c)) {
+		job j = c->jobs[c->all_jobs - 1];
+		for (int k = 1; k < j.nb_process + 1; k++) {
+			if (!c->bg) 
+			{
+				status = INT_MIN;
+				waitpid(j.pid[k], &status, WUNTRACED);
+				if(status != INT_MIN) {
+					if(WIFSTOPPED(status)) {
+						j.etat[0] = "Stopped";
+						print_job(j, 2, 0);
+						c -> nb_jobs = (c -> nb_jobs) + 1;
+					}
+					else if (WIFEXITED(status)) {
+						j.etat[0] = "Done";
+						c->val_retour = WEXITSTATUS(status); // récupère le statut du fils et le stocke dans val_retour
+					}
+					else if(WIFSIGNALED(status)) {
+						j.etat[0] = "Killed";
+						c->val_retour = 1;
+					}				
+				}
+			}
+			give_fg(getpid());
+		}
+	}
+	
 	if (fd)
 		free_pipes(fd);
+	free_cmd(c, 0, 0);
 	free(ligne);
 }
