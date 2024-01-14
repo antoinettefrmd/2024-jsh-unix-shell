@@ -103,6 +103,14 @@ IV)  Les différents algorithmes
 
 Gestion des pipes
 
+Si une commande contient des tubes, notre shell va créer un tableau où chaque commande
+est reliée à son tube. Lorsqu’une des commandes de la pipeline est ensuite envoyée à la fonction process, nous allons d’abord rediriger les entrées et sorties standard vers le tube auquel est associé la commande, puis close le tableau de tubes (comme on est dans un processus enfant, la table des fd est copiée, il faut donc tous les fermer afin de ne pas bloquer l’exécution), avant de l’exécuter. Plus précisément, chaque commande va écrire sur la sortie du tube de la commande suivante (mis à part évidemment la dernière commande de la pipeline qui écrit sur la sortie standard), et si besoin lire le résultat de la commande précédente sur l’entrée du tube (mis à part cette fois la première commande qui lit sur l’entrée standard).
+
+Une fois sorti du processus enfant, il faut encore close les fd inutiles (car ceux qu’on a close auparavant étaient des copies). La sortie du tube est fermée systématiquement (sauf encore une fois lors de la dernière itération de la boucle) car on n’en a jamais besoin pour la commande suivante. En ce qui concerne l’entrée, on ferme (sauf pour la première commande) celle du tube précédent car on n'en a plus besoin.
+
+La dernière étape consiste à faire attendre les process pour avec waitpid afin qu’elles puissent s’exécuter dans le bon ordre.
+
+
 
 Gestion des redirections
 
