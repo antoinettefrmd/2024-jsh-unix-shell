@@ -126,7 +126,7 @@ void	execloop(cmd *commande, char *ligne, char **envp)
 	}
 
 	c = origin;
-	if (!strcmp(ligne, "") == 0 && !is_builtins(c)) {
+	if (!strcmp(ligne, "") == 0 && (!is_builtins(c) || is_pipe(ligne))) {
 		job j = c->jobs[c->all_jobs - 1];
 		for (int k = 1; k < j.nb_process + 1; k++) {
 			if (!c->bg) 
