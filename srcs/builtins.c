@@ -15,7 +15,7 @@ int is_builtins(cmd *c)
 }
 
 int builtins(cmd *c) 
-{ 
+{
     int indice_redir = parse_redir(c);
     if (indice_redir == -1) exit(1);
     petit_tab(indice_redir, c);

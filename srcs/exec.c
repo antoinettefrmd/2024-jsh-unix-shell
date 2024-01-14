@@ -60,6 +60,7 @@ void	execute(cmd *c, char **envp)
 		path = tab[0];
 	else
 		path = find_path(tab[0], envp); // si aucun chemin n'est spécifié, on cherche la commande dans l'environnement
+	
 	if (!path || execve(path, tab, envp) == -1) // exécution de la commande
 	{
 		i = -1;
@@ -69,7 +70,6 @@ void	execute(cmd *c, char **envp)
 		if (!path)
 			error();
 		error();
-		return;
 	}
 }
 
@@ -100,7 +100,7 @@ void	execloop(cmd *commande, char *ligne, char **envp)
 			}
 			add_history(ligne);
 			if(c->str_opts[0] != NULL) {
-				if(!is_builtins(c)) {
+				if(!is_builtins(c) || is_pipe(ligne)) {
 					if (c -> bg) {
 						process(c, envp, strndup(ligne, strlen(ligne) - 2), fd, i); // on considère alors que c'est une commande externe
 					}
@@ -110,17 +110,17 @@ void	execloop(cmd *commande, char *ligne, char **envp)
 			}
 		}
 		free_cmd(c, 0); // free seulement le tableau des commandes et options
-		c = c->next;
 		if (is_pipe(ligne)) {
-			if (i%2)
-				close(fd[i / 2][0]);
-			else
-				close(fd[i / 2][1]);
+			if (c->next != NULL) {
+				close(fd[i][1]);
+			}
+			if (i) {
+				close(fd[i-1][0]);
+			}
 		}
+		c = c->next;
 		i++;
 	}
-	if (is_pipe(ligne))
-		close_pipes(fd);
 	if (fd)
 		free_pipes(fd);
 	free(ligne);

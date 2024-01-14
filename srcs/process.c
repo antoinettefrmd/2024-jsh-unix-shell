@@ -52,7 +52,12 @@ void	child_process(cmd *c, int **fd, int i, char **envp)
 		dup2(fd[i][1], STDOUT_FILENO);
 	}
 	close_pipes(fd);
-	execute(c, envp);
+	if (!is_builtins(c))
+		execute(c, envp);
+	else {
+		builtins(c);
+		exit(errno);
+	}
 }
 /*
 void	parent_process(cmd *c, int **fd, int i, char **envp)
@@ -67,6 +72,7 @@ void process(cmd *c, char ** envp, char *ligne, int **fd, int i)
 {
     pid_t   pid;
     int     status;
+	int indice_redir;
 
 	c -> all_jobs = c -> all_jobs + 1;
 	int nb_p = nb_cmd(c);
@@ -84,13 +90,17 @@ void process(cmd *c, char ** envp, char *ligne, int **fd, int i)
         error();
     else if (pid == 0) {
 		cmprtment_par_defaut();
-		if (c->next || is_pipe(ligne))
+		if (!is_builtins(c)) {
+			indice_redir = parse_redir(c);
+			if (indice_redir == -1) exit(1);
+			petit_tab(indice_redir, c);
+		}
+		if (is_pipe(ligne)) {
 			child_process(c, fd,i,  envp);
-		int indice_redir = parse_redir(c);
-		if (indice_redir == -1) exit(1);
-		petit_tab(indice_redir, c);
-        execute(c, envp); // execute la commande dans le processus fils
-        exit(errno);
+		}
+		execute(c, envp); // execute la commande dans le processus fils
+		exit(errno);
+
     }
     else
 	{

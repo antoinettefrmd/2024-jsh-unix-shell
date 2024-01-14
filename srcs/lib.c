@@ -226,12 +226,12 @@ int	is_pipe(char *str)
 
 void    print_cmd(cmd *c) {
     int    i = 0;
-    printf("commande = ");
+    fprintf(stderr, "commande = ");
     while (c->str_opts[i]) {
-        printf("%s ", c->str_opts[i]);
+        fprintf(stderr, "%s ", c->str_opts[i]);
         i++;
     }
-    printf("\n");
+    fprintf(stderr, "\n");
 }
 
 void give_fg(pid_t pid) {
